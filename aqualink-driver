@@ -108,8 +108,10 @@ void updatedeviceinfo(){
     }
     
     sendEvent(name: "label", value: "${label}")
+    sendEvent(name: "status", value: "${status}")
+    device.updateSetting("status", [value: "${status}", type: "string"])
     
-    if(status == 1) {
+    if(status == "1") {
         sendEvent(name: "switch", value: "on")        
     } else {
         sendEvent(name: "switch", value: "off")
@@ -133,7 +135,7 @@ def LoginGetSession(){
 	  response ->
 		if (response?.status == 200)
 		{
-            if (logEnable) log.info response.data
+            updatedeviceinfo
             if (logEnable) response.data.authentication_token
             if (logEnable) response.data.session_id
             
@@ -156,18 +158,36 @@ void on(){
     if(!session_id) {
         LoginGetSession()
     }
-    OperateDevice(devicenum)
+    
+    updatedeviceinfo()
+    log.info "  ${status}"
+    if(status=='0'){
+        if (logEnable) log.info "Toggle Device ON  ${status}"
+        OperateDevice(devicenum)
+        sendEvent(name: "switch", value: "on")        
+    } else {
+        if (logEnable) log.info "Device Already ON  ${status}"
+    }
 }
 
 void off(){
     if(!session_id) {
         LoginGetSession()
     }
-    OperateDevice(devicenum)
+    updatedeviceinfo()
+    if(status=='1'){
+        if (logEnable) log.info "Toggle Device OFF  ${status}"
+        OperateDevice(devicenum)
+        sendEvent(name: "switch", value: "off")        
+    } else {
+        if (logEnable) log.info "Device Already OFF  ${status}"
+    }
 }
 
 void OperateDevice(String num){
     def wxURI2 = "https://iaqualink-api.realtime.io/v1/mobile/session.json?actionID=command&command=set_aux_${num}&serial=${serial_number}&sessionID=${session_id}"
+    //log.info wxURI2
+    
     def requestParams2 =
 	[
 		uri:  wxURI2,
@@ -213,6 +233,10 @@ def GetSerialfromAqualink() {
 		{
             if (logEnable) log.info response.data
             serial_number = response.data.serial_number[0]
+            
+            
+            device.updateSetting("serial_number", [value: "${serial_number}", type: "string"])
+            
 			return serial_number
 		}
 		else
