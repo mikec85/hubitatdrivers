@@ -44,7 +44,7 @@ void parse(String description) {
 }
 
 void Update(){
-    updateinfo()
+    Updateinfo()
 }
 void updated() {
     log.info "updated..."
