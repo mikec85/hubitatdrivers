@@ -82,28 +82,28 @@ void updatedeviceinfo(){
     
     switch (devicenum){
         case '1':
-            status = devices.devices_screen[5].aux_1[0].state
-            label = devices.devices_screen[5].aux_1[1].label
+            status = devices.devices_screen[3].aux_1[0].state
+            label = devices.devices_screen[3].aux_1[1].label
         break
         case '2':
-            status = devices.devices_screen[5].aux_2[0].state
-            label = devices.devices_screen[5].aux_2[1].label
+            status = devices.devices_screen[4].aux_2[0].state
+            label = devices.devices_screen[4].aux_2[1].label
         break
         case '3':
             status = devices.devices_screen[5].aux_3[0].state
             label = devices.devices_screen[5].aux_3[1].label
         break
         case '4': //level
-            status = devices.devices_screen[5].aux_4[0].state
-            label = devices.devices_screen[5].aux_4[1].label
+            status = devices.devices_screen[6].aux_4[0].state
+            label = devices.devices_screen[6].aux_4[1].label
         break
         case '5': //level
-            status = devices.devices_screen[5].aux_5[0].state
-            label = devices.devices_screen[5].aux_5[1].label
+            status = devices.devices_screen[7].aux_5[0].state
+            label = devices.devices_screen[7].aux_5[1].label
         break
         case '6': //level
-            status = devices.devices_screen[5].aux_6[0].state
-            label = devices.devices_screen[5].aux_6[1].label
+            status = devices.devices_screen[8].aux_6[0].state
+            label = devices.devices_screen[8].aux_6[1].label
         break
     }
     
