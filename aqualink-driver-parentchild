@@ -10,10 +10,13 @@ metadata {
         
         attribute "label", "string"
         attribute "status", "string"
+        attribute "aqualink_status", "string"
         
         command "GetSerial", ["String"]
         command "Update", null
         command "DeleteChild", ["String"]
+        command "UpdateAqualinkStatus", null
+        command "TogglePoolPump", null
     }
 
     preferences {
@@ -41,6 +44,11 @@ def logsOff() {
 void parse(String description) {
     
 
+}
+
+def get_aqualink_status(){
+    //log.info device.currentValue("aqualink_status")
+    return device.currentValue("aqualink_status")
 }
 
 void DeleteChild(String device){
@@ -88,7 +96,7 @@ void CreateChild(String Unit, String label){
     
 }
 void CreateChildren(){
-    
+   
     devices = GetDevices()
     CreateChild("1", devices.devices_screen[3].aux_1[1].label )
     CreateChild("2", devices.devices_screen[4].aux_2[1].label )
@@ -96,6 +104,7 @@ void CreateChildren(){
     CreateChild("4", devices.devices_screen[6].aux_4[1].label )
     CreateChild("5", devices.devices_screen[7].aux_5[1].label )
     CreateChild("6", devices.devices_screen[8].aux_6[1].label )
+    CreateChild("FilterPump", "FilterPump" )
 }
 
 def fetchChild(String Unit){
@@ -112,6 +121,7 @@ void Updateinfo(){
         LoginGetSession()
     }
     updatedeviceinfo()
+    UpdateAqualinkStatus()
     
     if (autoUpdate) runIn(3600, Updateinfo)
 }
@@ -140,6 +150,7 @@ void updatedeviceinfo(){
     notifychild("4",devices.devices_screen[6].aux_4[0].state, devices.devices_screen[6].aux_4[1].label )
     notifychild("5",devices.devices_screen[7].aux_5[0].state, devices.devices_screen[7].aux_5[1].label )
     notifychild("6",devices.devices_screen[8].aux_6[0].state, devices.devices_screen[8].aux_6[1].label )
+    
 }
 
 def LoginGetSession(){
@@ -189,25 +200,35 @@ void on(){
     
     if(device.currentValue('switch') == 'off'){
         if (logEnable) log.info "Toggle Device ON  ${device}"
-        OperateDevice(unit)
+        if(unit == "FilterPump"){
+            TogglePoolPump()  
+        } else {
+            OperateDevice(unit)
+        }
         sendEvent(name: "switch", value: "on")        
     } else {
         if (logEnable) log.info "Device Already ON  ${device}"
     }
+      
 }
 
 void off(){
     unit=device.deviceNetworkId.substring(device.deviceNetworkId.indexOf("-")+1)
     parent.rundeviceupdate()
-    log.info "  ${device.currentValue('switch')} "
+    log.info "${unit}    ${device.currentValue('switch')} "
     
     if(device.currentValue('switch') == 'on'){
         if (logEnable) log.info "Toggle Device OFF  ${device}"
-        OperateDevice(devicenum)
+        if(unit == "FilterPump"){
+            TogglePoolPump()  
+        } else {
+            OperateDevice(unit)
+        }
         sendEvent(name: "switch", value: "off")        
     } else {
         if (logEnable) log.info "Device Already OFF  ${device}"
     }
+        
 }
 
 void OperateDevice(String num){
@@ -243,6 +264,22 @@ void GetSerial() {
     
 }
 
+def UpdateAqualinkStatus() {
+    
+    if(!session_id) {
+        LoginGetSession()
+    }
+    
+    homeinfo = GetHomeScreenInfo();
+    
+    state.aqualink_status = homeinfo.home_screen[0].status
+    sendEvent(name: "aqualink_status", value: homeinfo.home_screen[0].status)
+    
+    if (logEnable) log.info "pool pump status  ${homeinfo.home_screen[12].pool_pump}"
+    
+    notifychild("FilterPump",homeinfo.home_screen[12].pool_pump, "FilterPump" )
+    
+}
 def GetSerialfromAqualink() {
     
     def wxURI2 = "https://support.iaqualink.com//devices.json?api_key=EOOEMOW4YR6QNB07&authentication_token=${auth_token}&user_id=${user_id}"
@@ -270,6 +307,64 @@ def GetSerialfromAqualink() {
 		}
 	}
     
+  
+}
+def TogglePoolPump() {
+    
+    if(!session_id) {
+        LoginGetSession()
+    }
+    
+    OperatePoolPump();
+    
+}
+def OperatePoolPump() {
+    
+    def wxURI2 = "https://iaqualink-api.realtime.io/v1/mobile/session.json?actionID=command&command=set_pool_pump&serial=${serial_number}&sessionID=${session_id}"
+    
+    def requestParams2 =
+	[
+		uri:  wxURI2,
+	]
+    httpGet(requestParams2)
+	{
+	  response ->
+		if (response?.status == 200)
+		{
+            if (logEnable) log.info response.data
+			return response.data
+		}
+		else
+		{
+			log.warn "${response?.status}"
+		}
+	}
+    
+    
+}
+
+def GetHomeScreenInfo() {
+    
+    def wxURI2 = "https://iaqualink-api.realtime.io/v1/mobile/session.json?actionID=command&command=get_home&serial=${serial_number}&sessionID=${session_id}"
+    
+    def requestParams2 =
+	[
+		uri:  wxURI2,
+	]
+    httpGet(requestParams2)
+	{
+	  response ->
+		if (response?.status == 200)
+		{
+            if (logEnable) log.info response.data
+			return response.data
+		}
+		else
+		{
+			log.warn "${response?.status}"
+		}
+	}
+    
     
 }
 
@@ -286,7 +381,7 @@ def GetDevices() {
 	  response ->
 		if (response?.status == 200)
 		{
-            if (logEnable) response.data
+            if (logEnable) log.info response.data
 			return response.data
 		}
 		else
