@@ -204,9 +204,9 @@ void on(){
     if(device.currentValue('switch') == 'off'){
         if (logEnable) log.info "Toggle Device ON  ${device}"
         if(unit == "FilterPump"){
-            TogglePoolPump()  
+            parent.TogglePoolPump()  
         } else {
-            OperateDevice(unit)
+            parent.OperateDeviceParent(unit)
         }
         sendEvent(name: "switch", value: "on")        
     } else {
@@ -223,9 +223,9 @@ void off(){
     if(device.currentValue('switch') == 'on'){
         if (logEnable) log.info "Toggle Device OFF  ${device}"
         if(unit == "FilterPump"){
-            TogglePoolPump()  
+            parent.TogglePoolPump()  
         } else {
-            OperateDevice(unit)
+           parent.OperateDeviceParent(unit)
         }
         sendEvent(name: "switch", value: "off")        
     } else {
@@ -234,9 +234,15 @@ void off(){
         
 }
 
+void OperateDeviceParent(String num){
+    if(!session_id) {
+        LoginGetSession()
+    }
+    OperateDevice(num)
+}
 void OperateDevice(String num){
     def wxURI2 = "https://iaqualink-api.realtime.io/v1/mobile/session.json?actionID=command&command=set_aux_${num}&serial=${serial_number}&sessionID=${session_id}"
-    
+    if (logEnable) log.info wxURI2
     def requestParams2 =
 	[
 		uri:  wxURI2,
