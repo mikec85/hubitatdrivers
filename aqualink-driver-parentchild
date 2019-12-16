@@ -90,7 +90,7 @@ def CreateChild2(String Unit, String label){
 
 void CreateChild(String Unit, String label){
     
-    if("AUX${Unit}" != label || label != "AUX-11") {
+    if("AUX${Unit}" != label && label != "AUX-11") {
          CreateChild2(Unit, label)   
     }
     
