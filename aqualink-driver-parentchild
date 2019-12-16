@@ -90,7 +90,7 @@ def CreateChild2(String Unit, String label){
 
 void CreateChild(String Unit, String label){
     
-    if("AUX${Unit}" != label) {
+    if("AUX${Unit}" != label || label != "AUX-11") {
          CreateChild2(Unit, label)   
     }
     
@@ -104,6 +104,8 @@ void CreateChildren(){
     CreateChild("4", devices.devices_screen[6].aux_4[1].label )
     CreateChild("5", devices.devices_screen[7].aux_5[1].label )
     CreateChild("6", devices.devices_screen[8].aux_6[1].label )
+    CreateChild("7", devices.devices_screen[9].aux_7[1].label )
+    CreateChild("8", devices.devices_screen[10].aux_EA[1].label )
     CreateChild("FilterPump", "FilterPump" )
 }
 
@@ -150,7 +152,8 @@ void updatedeviceinfo(){
     notifychild("4",devices.devices_screen[6].aux_4[0].state, devices.devices_screen[6].aux_4[1].label )
     notifychild("5",devices.devices_screen[7].aux_5[0].state, devices.devices_screen[7].aux_5[1].label )
     notifychild("6",devices.devices_screen[8].aux_6[0].state, devices.devices_screen[8].aux_6[1].label )
-    
+    notifychild("7",devices.devices_screen[9].aux_7[0].state, devices.devices_screen[9].aux_7[1].label )
+    notifychild("8",devices.devices_screen[10].aux_EA[0].state, devices.devices_screen[10].aux_EA[1].label )
 }
 
 def LoginGetSession(){
