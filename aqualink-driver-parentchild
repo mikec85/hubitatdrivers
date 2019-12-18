@@ -26,6 +26,7 @@ metadata {
             input "password", "string", title:"User Password", description: "", required: true, displayDuringSetup: true
             input name: "logEnable", type: "bool", title: "Enable debug logging", defaultValue: true
             input name: "autoUpdate", type: "bool", title: "Enable Auto updating", defaultValue: true
+            input name: "aux_EA", type: "bool", title: "Enable AUX EA Port", defaultValue: false
         }
     }
 
@@ -105,7 +106,7 @@ void CreateChildren(){
     CreateChild("5", devices.devices_screen[7].aux_5[1].label )
     CreateChild("6", devices.devices_screen[8].aux_6[1].label )
     CreateChild("7", devices.devices_screen[9].aux_7[1].label )
-    CreateChild("8", devices.devices_screen[10].aux_EA[1].label )
+    if (aux_EA) { CreateChild("8", devices.devices_screen[10].aux_EA[1].label ) } 
     CreateChild("FilterPump", "FilterPump" )
 }
 
@@ -153,7 +154,7 @@ void updatedeviceinfo(){
     try {  notifychild("5",devices.devices_screen[7].aux_5[0].state, devices.devices_screen[7].aux_5[1].label )  } catch (Exception e) { log.warn "aux_5 failed: ${e.message}" }
     try {  notifychild("6",devices.devices_screen[8].aux_6[0].state, devices.devices_screen[8].aux_6[1].label )  } catch (Exception e) { log.warn "aux_6 failed: ${e.message}" }
     try {  notifychild("7",devices.devices_screen[9].aux_7[0].state, devices.devices_screen[9].aux_7[1].label )  } catch (Exception e) { log.warn "aux_7 failed: ${e.message}" }
-    try {  notifychild("8",devices.devices_screen[10].aux_EA[0].state, devices.devices_screen[10].aux_EA[1].label )  } catch (Exception e) { log.warn "aux_EA failed: ${e.message}" }
+    if (aux_EA) { try {  notifychild("8",devices.devices_screen[10].aux_EA[0].state, devices.devices_screen[10].aux_EA[1].label )  } catch (Exception e) { log.warn "aux_EA failed: ${e.message}" } }
 }
 
 def LoginGetSession(){
