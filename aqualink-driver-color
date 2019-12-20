@@ -24,7 +24,7 @@ metadata {
             input "lightcolor", "string", title:"Color for Light (Should be Number from 1-12)", description: "", required: true, displayDuringSetup: true, defaultValue: "1"
             input name: "logEnable", type: "bool", title: "Enable debug logging", defaultValue: true
             input name: "autoUpdate", type: "bool", title: "Enable Auto updating", defaultValue: true
-            input name: "colorlight", type: "bool", title: "Color Light", defaultValue: false
+            input name: "colorlightenable", type: "bool", title: "Color Light", defaultValue: false
         }
     }
 
@@ -86,26 +86,51 @@ void updatedeviceinfo(){
         case '1':
             status = devices.devices_screen[3].aux_1[0].state
             label = devices.devices_screen[3].aux_1[1].label
+            if(devices.devices_screen[3].aux_1[1].type == 2) {
+                colorstatus =  devices.devices_screen[3].aux_1[1].subtype   
+            }
         break
         case '2':
             status = devices.devices_screen[4].aux_2[0].state
             label = devices.devices_screen[4].aux_2[1].label
+            if(devices.devices_screen[4].aux_2[1].type == 2) {
+                colorstatus =  devices.devices_screen[3].aux_2[1].subtype   
+            }        
         break
         case '3':
             status = devices.devices_screen[5].aux_3[0].state
             label = devices.devices_screen[5].aux_3[1].label
+            if(devices.devices_screen[5].aux_3[1].type == 2) {
+                colorstatus =  devices.devices_screen[3].aux_3[1].subtype   
+            }        
         break
         case '4': //level
             status = devices.devices_screen[6].aux_4[0].state
             label = devices.devices_screen[6].aux_4[1].label
+            if(devices.devices_screen[6].aux_4[1].type == 2) {
+                colorstatus =  devices.devices_screen[6].aux_4[1].subtype   
+            }        
         break
         case '5': //level
             status = devices.devices_screen[7].aux_5[0].state
             label = devices.devices_screen[7].aux_5[1].label
+            if(devices.devices_screen[7].aux_5[1].type == 2) {
+                colorstatus =  devices.devices_screen[7].aux_5[1].subtype   
+            }        
         break
         case '6': //level
             status = devices.devices_screen[8].aux_6[0].state
             label = devices.devices_screen[8].aux_6[1].label
+            if(devices.devices_screen[8].aux_6[1].type == 2) {
+                colorstatus =  devices.devices_screen[8].aux_6[1].subtype   
+            }        
+        break
+        case '7': //level
+            status = devices.devices_screen[9].aux_7[0].state
+            label = devices.devices_screen[9].aux_7[1].label
+            if(devices.devices_screen[9].aux_7[1].type == 2) {
+                colorstatus =  devices.devices_screen[9].aux_7[1].subtype   
+            }        
         break
     }
     
@@ -165,11 +190,12 @@ void on(){
     log.info "  ${status}"
     if(status=='0'){
         if (logEnable) log.info "Toggle Device ON  ${status}"
-            if(colorlight){
-                OperateColorLight(devicenum,lightcolor)
-            } else {
-                OperateDevice(devicenum)
-            }
+        
+        if(colorlightenable){
+            OperateColorLight(devicenum,lightcolor)
+        } else {
+            OperateDevice(devicenum)
+        }
         sendEvent(name: "switch", value: "on")        
     } else {
         if (logEnable) log.info "Device Already ON  ${status}"
@@ -183,11 +209,12 @@ void off(){
     updatedeviceinfo()
     if(status=='1'){
         if (logEnable) log.info "Toggle Device OFF  ${status}"
-            if(colorlight){
-                OperateColorLight(devicenum,"0")
-            } else {
-                OperateDevice(devicenum)
-            }
+        
+        if(colorlightenable){
+            OperateColorLight(devicenum,"0")
+        } else {
+            OperateDevice(devicenum)
+        }
         sendEvent(name: "switch", value: "off")        
     } else {
         if (logEnable) log.info "Device Already OFF  ${status}"
