@@ -11,6 +11,8 @@ metadata {
         attribute "label", "string"
         attribute "status", "string"
         attribute "aqualink_status", "string"
+        attribute "subtype", "string"
+        attribute "devtype", "string"
         
         command "GetSerial", ["String"]
         command "Update", null
@@ -24,9 +26,11 @@ metadata {
             input "serial_number", "string", title:"Pool Serial Number", description: "", required: true, displayDuringSetup: true
             input "email", "string", title:"Userid - Email", description: "", required: true, displayDuringSetup: true
             input "password", "string", title:"User Password", description: "", required: true, displayDuringSetup: true
+            input "lightcolor", "string", title:"Color for Light (Should be Number from 1-12)", description: "", required: true, displayDuringSetup: true, defaultValue: "1"
             input name: "logEnable", type: "bool", title: "Enable debug logging", defaultValue: true
             input name: "autoUpdate", type: "bool", title: "Enable Auto updating", defaultValue: true
             input name: "aux_EA", type: "bool", title: "Enable AUX EA Port", defaultValue: false
+            
         }
     }
 
@@ -89,25 +93,33 @@ def CreateChild2(String Unit, String label){
     return cd 
 }
 
-void CreateChild(String Unit, String label){
+
+void updatedevtype(String devtype){
+    device.updateSetting("devtype", devtype)
+    sendEvent(name:"devtype", value:devtype)
+    state.devtype = devtype
+}
+void CreateChild(String Unit, String label, String devtype){
     
     if("AUX${Unit}" != label && label != "AUX-11") {
-         CreateChild2(Unit, label)   
+        cd = CreateChild2(Unit, label)
+        cd.updatedevtype(devtype)
+        if (logEnable) log.info "Unit is ${Unit}   DeviceType is ${devtype}"
     }
     
 }
 void CreateChildren(){
    
     devices = GetDevices()
-    CreateChild("1", devices.devices_screen[3].aux_1[1].label )
-    CreateChild("2", devices.devices_screen[4].aux_2[1].label )
-    CreateChild("3", devices.devices_screen[5].aux_3[1].label )
-    CreateChild("4", devices.devices_screen[6].aux_4[1].label )
-    CreateChild("5", devices.devices_screen[7].aux_5[1].label )
-    CreateChild("6", devices.devices_screen[8].aux_6[1].label )
-    CreateChild("7", devices.devices_screen[9].aux_7[1].label )
-    if (aux_EA) { CreateChild("8", devices.devices_screen[10].aux_EA[1].label ) } 
-    CreateChild("FilterPump", "FilterPump" )
+    CreateChild("1", devices.devices_screen[3].aux_1[1].label, devices.devices_screen[3].aux_1[3].type )
+    CreateChild("2", devices.devices_screen[4].aux_2[1].label, devices.devices_screen[4].aux_2[3].type )
+    CreateChild("3", devices.devices_screen[5].aux_3[1].label, devices.devices_screen[5].aux_3[3].type )
+    CreateChild("4", devices.devices_screen[6].aux_4[1].label, devices.devices_screen[6].aux_4[3].type )
+    CreateChild("5", devices.devices_screen[7].aux_5[1].label, devices.devices_screen[7].aux_5[3].type )
+    CreateChild("6", devices.devices_screen[8].aux_6[1].label, devices.devices_screen[8].aux_6[3].type )
+    CreateChild("7", devices.devices_screen[9].aux_7[1].label, devices.devices_screen[9].aux_7[3].type )
+    if (aux_EA) { CreateChild("8", devices.devices_screen[10].aux_EA[1].label, devices.devices_screen[10].aux_EA[3].type ) } 
+    CreateChild("FilterPump", "FilterPump", "0")
 }
 
 def fetchChild(String Unit){
@@ -120,6 +132,7 @@ def fetchChild(String Unit){
 }
 
 void Updateinfo(){
+    
     if(!session_id) {
         LoginGetSession()
     }
@@ -129,13 +142,13 @@ void Updateinfo(){
     if (autoUpdate) runIn(3600, Updateinfo)
 }
 
-void notifychild(String chunit, String status, String label){
+void notifychild(String chunit, String status, String label, String devtype, String subtype){
     def cd = fetchChild(chunit)
     if(cd){
-        cd.parsechild(status, label)
+        cd.parsechild(status, label, devtype, subtype)
     }
 }
-void parsechild(String status2, String label) {
+void parsechild(String status2, String label, String devtype, String subtype) {
     device.name = label
     status= status2
     if(status == "1") {
@@ -143,18 +156,22 @@ void parsechild(String status2, String label) {
     } else {
         sendEvent(name: "switch", value: "off")
     }
+    device.updateSetting("devtype", devtype)
+    sendEvent(name:"devtype", value:devtype)
+    state.devtype = devtype
 }
 
 void updatedeviceinfo(){
     devices = GetDevices()
-    try {  notifychild("1",devices.devices_screen[3].aux_1[0].state, devices.devices_screen[3].aux_1[1].label )  } catch (Exception e) { log.warn "aux_1 failed: ${e.message}" }
-    try {  notifychild("2",devices.devices_screen[4].aux_2[0].state, devices.devices_screen[4].aux_2[1].label )  } catch (Exception e) { log.warn "aux_2 failed: ${e.message}" }
-    try {  notifychild("3",devices.devices_screen[5].aux_3[0].state, devices.devices_screen[5].aux_3[1].label )  } catch (Exception e) { log.warn "aux_3 failed: ${e.message}" }
-    try {  notifychild("4",devices.devices_screen[6].aux_4[0].state, devices.devices_screen[6].aux_4[1].label )  } catch (Exception e) { log.warn "aux_4 failed: ${e.message}" }
-    try {  notifychild("5",devices.devices_screen[7].aux_5[0].state, devices.devices_screen[7].aux_5[1].label )  } catch (Exception e) { log.warn "aux_5 failed: ${e.message}" }
-    try {  notifychild("6",devices.devices_screen[8].aux_6[0].state, devices.devices_screen[8].aux_6[1].label )  } catch (Exception e) { log.warn "aux_6 failed: ${e.message}" }
-    try {  notifychild("7",devices.devices_screen[9].aux_7[0].state, devices.devices_screen[9].aux_7[1].label )  } catch (Exception e) { log.warn "aux_7 failed: ${e.message}" }
-    if (aux_EA) { try {  notifychild("8",devices.devices_screen[10].aux_EA[0].state, devices.devices_screen[10].aux_EA[1].label )  } catch (Exception e) { log.warn "aux_EA failed: ${e.message}" } }
+   
+    try {  notifychild("1",devices.devices_screen[3].aux_1[0].state, devices.devices_screen[3].aux_1[1].label, devices.devices_screen[3].aux_1[3].type, devices.devices_screen[3].aux_1[4].subtype )  } catch (Exception e) { log.warn "aux_1 failed: ${e.message}" }
+    try {  notifychild("2",devices.devices_screen[4].aux_2[0].state, devices.devices_screen[4].aux_2[1].label, devices.devices_screen[4].aux_2[3].type, devices.devices_screen[4].aux_2[4].subtype )  } catch (Exception e) { log.warn "aux_2 failed: ${e.message}" }
+    try {  notifychild("3",devices.devices_screen[5].aux_3[0].state, devices.devices_screen[5].aux_3[1].label, devices.devices_screen[5].aux_3[3].type, devices.devices_screen[5].aux_3[4].subtype )  } catch (Exception e) { log.warn "aux_3 failed: ${e.message}" }
+    try {  notifychild("4",devices.devices_screen[6].aux_4[0].state, devices.devices_screen[6].aux_4[1].label, devices.devices_screen[6].aux_4[3].type, devices.devices_screen[6].aux_4[4].subtype )  } catch (Exception e) { log.warn "aux_4 failed: ${e.message}" }
+    try {  notifychild("5",devices.devices_screen[7].aux_5[0].state, devices.devices_screen[7].aux_5[1].label, devices.devices_screen[7].aux_5[3].type, devices.devices_screen[7].aux_5[4].subtype )  } catch (Exception e) { log.warn "aux_5 failed: ${e.message}" }
+    try {  notifychild("6",devices.devices_screen[8].aux_6[0].state, devices.devices_screen[8].aux_6[1].label, devices.devices_screen[8].aux_6[3].type, devices.devices_screen[8].aux_6[4].subtype )  } catch (Exception e) { log.warn "aux_6 failed: ${e.message}" }
+    try {  notifychild("7",devices.devices_screen[9].aux_7[0].state, devices.devices_screen[9].aux_7[1].label, devices.devices_screen[9].aux_7[3].type, devices.devices_screen[9].aux_7[4].subtype )  } catch (Exception e) { log.warn "aux_7 failed: ${e.message}" }
+    if (aux_EA) { try {  notifychild("8",devices.devices_screen[10].aux_EA[0].state, devices.devices_screen[10].aux_EA[1].label, devices.devices_screen[10].aux_EA[3].type, devices.devices_screen[10].aux_EA[4].subtype )  } catch (Exception e) { log.warn "aux_EA failed: ${e.message}" } }
 }
 
 def LoginGetSession(){
@@ -177,7 +194,9 @@ def LoginGetSession(){
             if (logEnable) response.data.authentication_token
             if (logEnable) response.data.session_id
             
+            device.updateSetting("session_id", [value: response.data.session_id, type: "String"])
             session_id = response.data.session_id
+            settings.session_id = response.data.session_id
             auth_token = response.data.authentication_token
             user_id = response.data.id
 			return response.data.session_id
@@ -200,12 +219,14 @@ void rundeviceupdate(){
 void on(){
     unit=device.deviceNetworkId.substring(device.deviceNetworkId.indexOf("-")+1)
     parent.rundeviceupdate()
-    log.info "  ${device.currentValue('switch')} "
+    devtype = device.currentValue('devtype')
     
     if(device.currentValue('switch') == 'off'){
         if (logEnable) log.info "Toggle Device ON  ${device}"
         if(unit == "FilterPump"){
             parent.TogglePoolPump()  
+        } else if(devtype == "2"){
+            parent.OperateColorLightParent(unit,settings.lightcolor)
         } else {
             parent.OperateDeviceParent(unit)
         }
@@ -219,14 +240,17 @@ void on(){
 void off(){
     unit=device.deviceNetworkId.substring(device.deviceNetworkId.indexOf("-")+1)
     parent.rundeviceupdate()
-    log.info "${unit}    ${device.currentValue('switch')} "
+    //log.info "${unit}    ${device.currentValue('switch')} "
+    devtype = device.currentValue('devtype')
     
     if(device.currentValue('switch') == 'on'){
         if (logEnable) log.info "Toggle Device OFF  ${device}"
         if(unit == "FilterPump"){
             parent.TogglePoolPump()  
+        } else if(devtype == "2"){
+            parent.OperateColorLightParent(unit,"0")
         } else {
-           parent.OperateDeviceParent(unit)
+            parent.OperateDeviceParent(unit)
         }
         sendEvent(name: "switch", value: "off")        
     } else {
@@ -287,7 +311,7 @@ def UpdateAqualinkStatus() {
     
     if (logEnable) log.info "pool pump status  ${homeinfo.home_screen[12].pool_pump}"
     
-    notifychild("FilterPump",homeinfo.home_screen[12].pool_pump, "FilterPump" )
+    notifychild("FilterPump",homeinfo.home_screen[12].pool_pump, "FilterPump" , "FilterPump", "0")
     
 }
 def GetSerialfromAqualink() {
@@ -401,4 +425,32 @@ def GetDevices() {
 	}
     
     
+}
+
+void OperateColorLightParent(String num, String color){
+    if(!session_id) {
+        LoginGetSession()
+    }
+    OperateColorLight(num,color)
+}
+void OperateColorLight(String num,String light_color){
+    def wxURI2 = "https://iaqualink-api.realtime.io/v1/mobile/session.json?actionID=command&aux=${num}&command=set_light&light=${light_color}&serial=${serial_number}&sessionID=${session_id}"
+    //log.info wxURI2
+    def requestParams2 =
+	[
+		uri:  wxURI2,
+	]
+    httpGet(requestParams2)
+	{
+	  response ->
+		if (response?.status == 200)
+		{
+            if (logEnable) log.info response.data
+			return response.data
+		}
+		else
+		{
+			log.warn "${response?.status}"
+		}
+	}
 }
