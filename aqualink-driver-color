@@ -21,7 +21,7 @@ metadata {
             input "email", "string", title:"Userid - Email", description: "", required: true, displayDuringSetup: true
             input "password", "string", title:"User Password", description: "", required: true, displayDuringSetup: true
             input "devicenum", "string", title:"Device Number", description: "", required: true, displayDuringSetup: true
-            input "lightcolor", "string", title:"Color for Light (Should be Number from 1-12)", description: "", required: true, displayDuringSetup: true
+            input "lightcolor", "string", title:"Color for Light (Should be Number from 1-12)", description: "", required: true, displayDuringSetup: true, defaultValue: "1"
             input name: "logEnable", type: "bool", title: "Enable debug logging", defaultValue: true
             input name: "autoUpdate", type: "bool", title: "Enable Auto updating", defaultValue: true
             input name: "colorlight", type: "bool", title: "Color Light", defaultValue: false
