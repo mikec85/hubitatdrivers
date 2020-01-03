@@ -1,0 +1,267 @@
+metadata {
+    definition (name: "Pool Aqualink Temps", namespace: "aqualink2", author: "MC") {
+        capability "Initialize"
+        capability "TemperatureMeasurement"
+        
+        attribute "contact", "string"
+        attribute "session_id", "string"
+        attribute "auth_token", "string"
+        attribute "user_id", "string"
+        
+        attribute "label", "string"
+        attribute "status", "string"
+        attribute "aqualink_status", "string"
+        
+        command "GetSerial", ["String"]
+        command "Update", null
+        command "DeleteChild", ["String"]
+        command "UpdateAqualinkStatus", null
+        command "TogglePoolPump", null
+    }
+
+    preferences {
+        section("Device Settings:") {
+            input "serial_number", "string", title:"Pool Serial Number", description: "", required: true, displayDuringSetup: true
+            input "email", "string", title:"Userid - Email", description: "", required: true, displayDuringSetup: true
+            input "password", "string", title:"User Password", description: "", required: true, displayDuringSetup: true
+            input name: "logEnable", type: "bool", title: "Enable debug logging", defaultValue: true
+            input name: "autoUpdate", type: "bool", title: "Enable Auto updating", defaultValue: true
+            
+        }
+    }
+
+
+}
+
+void installed() {
+    log.warn "..."
+    initialize()
+}
+def logsOff() {
+    log.warn "debug logging disabled..."
+    device.updateSetting("logEnable", [value: "false", type: "bool"])
+}
+
+void parse(String description) {
+    
+
+}
+
+void DeleteChild(String device){
+    deleteChildDevice(device)
+   
+}
+void Update(){
+    Updateinfo()
+}
+void updated() {
+    log.info "updated..."
+    initialize()
+    log.warn "debug logging is: ${logEnable == true}"
+    if (logEnable) runIn(1800, logsOff)
+    
+    if (autoUpdate) runIn(3600, Updateinfo)
+}
+
+void uninstalled() {
+    deleteChildDevice("Pool_Temp")
+    deleteChildDevice("Spa_Temp")
+    
+}
+
+void initialize() {
+    
+    LoginGetSession()
+    CreateChildren()
+    updatedeviceinfo()
+
+}
+
+def CreateChild2(String Unit, String label){
+    String thisId = device.id
+    def cd = getChildDevice("${thisId}-${Unit}")
+    if (!cd) {
+        cd = addChildDevice( "Pool Aqualink Temps", "${thisId}-${Unit}", [name: "${label}", isComponent: true])
+    }
+    return cd 
+}
+
+void updatetemp(String temp){
+    sendEvent(name: "temperature", value: temp.toInteger()) 
+    
+}
+
+void CreateChild(String Unit, String label, String devtype){
+    CreateChild2(Unit, label)
+
+    if (logEnable) log.info "Unit is ${Unit}   DeviceType is ${devtype}"
+}
+void CreateChildren(){
+    CreateChild("Pool_Temp", "Pool Temp", "0" )
+    CreateChild("Spa_Temp", "Spa Temp", "0" )
+
+}
+
+def fetchChild(String Unit){
+    String thisId = device.id
+    def cd = getChildDevice("${thisId}-${Unit}")
+    if (!cd) {
+         return null
+    }
+    return cd 
+}
+
+void Updateinfo(){
+    
+    if(!session_id) {
+        LoginGetSession()
+    }
+    updatedeviceinfo()
+ 
+    if (autoUpdate) runIn(3600, Updateinfo)
+}
+
+void notifychild(String chunit, String status, String label, String devtype, String subtype){
+    def cd = fetchChild(chunit)
+    if(cd){
+        cd.parsechild(status, label, devtype, subtype)
+    }
+}
+void parsechild(String status2, String label, String devtype, String subtype) {
+    device.name = label
+    
+    log.info "temp   ${status2}   ${label}   ${devtype}  ${subtype} "
+    //log.info status2.toInteger()
+    if(status2 == "") {
+       sendEvent(name: "temperature", value: 0) 
+    } else {
+       sendEvent(name: "temperature", value: status2.toInteger())  
+    }
+}
+
+void updatedeviceinfo(){
+    devices = GetHomeScreenInfo()
+   
+    state.aqualink_status = devices.home_screen[0].status
+    sendEvent(name: "aqualink_status", value: devices.home_screen[0].status)
+    
+    if (logEnable) log.info "pool pump status  ${devices.home_screen[12].pool_pump}"
+    
+    log.info "pool pump temp  ${homeinfo.home_screen[5].pool_temp}"
+    
+    try {  notifychild("Pool_Temp",devices.home_screen[5].pool_temp, "Pool Temp", "0", "0" )  } catch (Exception e) { log.warn "pool temp failed: ${e.message}" }
+    try {  notifychild("Spa_Temp",devices.home_screen[4].spa_temp, "Spa Temp", "0", "0" )  } catch (Exception e) { log.warn "Spa temp failed: ${e.message}" }
+    
+}
+
+def LoginGetSession(){
+    
+    def wxURI = "https://support.iaqualink.com/users/sign_in.json"
+    
+	def requestParams =
+	[
+		uri:  wxURI,
+		requestContentType: "application/json",
+        body: """{"api_key": "EOOEMOW4YR6QNB07", "email": "${email}", "password": "${password}"}"""
+	]
+
+	httpPost(requestParams)
+	{
+	  response ->
+		if (response?.status == 200)
+		{
+            updatedeviceinfo
+            if (logEnable) response.data.authentication_token
+            if (logEnable) response.data.session_id
+            
+            device.updateSetting("session_id", [value: response.data.session_id, type: "String"])
+            session_id = response.data.session_id
+            settings.session_id = response.data.session_id
+            auth_token = response.data.authentication_token
+            user_id = response.data.id
+			return response.data.session_id
+		}
+		else
+		{
+			log.warn "${response?.status}"
+		}
+	}
+    
+}
+
+void rundeviceupdate(){
+    if(!session_id) {
+        LoginGetSession()
+    }
+    updatedeviceinfo()
+}
+
+
+
+
+void GetSerial() {
+    
+    if(!session_id) {
+        LoginGetSession()
+    }
+    serial_number = GetSerialfromAqualink()
+    sendEvent(name: "serial", value: "${serial_number}")
+    
+}
+
+
+def GetSerialfromAqualink() {
+    
+    def wxURI2 = "https://support.iaqualink.com//devices.json?api_key=EOOEMOW4YR6QNB07&authentication_token=${auth_token}&user_id=${user_id}"
+    
+    def requestParams2 =
+	[
+		uri:  wxURI2,
+	]
+    httpGet(requestParams2)
+	{
+	  response ->
+		if (response?.status == 200)
+		{
+            if (logEnable) log.info response.data
+            serial_number = response.data.serial_number[0]
+            
+            
+            device.updateSetting("serial_number", [value: "${serial_number}", type: "string"])
+            
+			return serial_number
+		}
+		else
+		{
+			log.warn "${response?.status}"
+		}
+	}
+    
+  
+}
+
+def GetHomeScreenInfo() {
+    
+    def wxURI2 = "https://iaqualink-api.realtime.io/v1/mobile/session.json?actionID=command&command=get_home&serial=${serial_number}&sessionID=${session_id}"
+    
+    def requestParams2 =
+	[
+		uri:  wxURI2,
+	]
+    httpGet(requestParams2)
+	{
+	  response ->
+		if (response?.status == 200)
+		{
+            if (logEnable) log.info response.data
+			return response.data
+		}
+		else
+		{
+			log.warn "${response?.status}"
+		}
+	}
+    
+    
+}
+
