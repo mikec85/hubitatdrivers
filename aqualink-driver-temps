@@ -15,8 +15,6 @@ metadata {
         command "GetSerial", ["String"]
         command "Update", null
         command "DeleteChild", ["String"]
-        command "UpdateAqualinkStatus", null
-        command "TogglePoolPump", null
     }
 
     preferences {
