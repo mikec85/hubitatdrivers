@@ -1,0 +1,60 @@
+metadata {
+    definition (name: "Pool Aqualink Child Temps", namespace: "aqualink", author: "MC") {
+        capability "TemperatureMeasurement"
+        
+        attribute "contact", "string"
+        
+        attribute "label", "string"
+
+    }
+
+    preferences {
+        section("Device Settings:") {
+            input name: "logEnable", type: "bool", title: "Enable debug logging", defaultValue: true
+        }
+    }
+
+
+}
+
+def logsOff() {
+    log.warn "debug logging disabled..."
+    device.updateSetting("logEnable", [value: "false", type: "bool"])
+}
+
+void parse(String description) {
+    
+
+}
+
+
+void updated() {
+    log.info "updated..."
+    initialize()
+    log.warn "debug logging is: ${logEnable == true}"
+    if (logEnable) runIn(1800, logsOff)
+    
+    if (autoUpdate) runIn(3600, Updateinfo)
+}
+
+
+
+
+void updatetemp(String temp){
+    sendEvent(name: "temperature", value: temp.toInteger()) 
+    
+}
+
+
+void parsechild(String status2, String label, String devtype, String subtype) {
+    device.name = label
+    
+    log.info "temp   ${status2}   ${label}   ${devtype}  ${subtype} "
+    //log.info status2.toInteger()
+    if(status2 == "") {
+       sendEvent(name: "temperature", value: 0) 
+    } else {
+       sendEvent(name: "temperature", value: status2.toInteger())  
+    }
+}
+
