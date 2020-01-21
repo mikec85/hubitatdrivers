@@ -16,17 +16,18 @@ metadata {
         command "GetDeviceStatus", ["String"]
         command "GetClientConnected", ["String"]
         command "CreateChildPresence", ["MAC","Label"]
+        command "CreateChildBlock", ["MAC","Label"]
         command "DeleteChild", ["String"]
         command "GetKnownClients", null
         command "GetKnownClientsDisabled", ["_id"]
-        
+        command "GetClientID", ["MAC"]
     }
 
     preferences {
         section("Device Settings:") {
             input "ip_addr", "string", title:"ip address", description: "", required: true, displayDuringSetup: true
             input "url_port", "string", title:"tcp port", description: "", required: true, displayDuringSetup: true, defaultValue: "8443"
-            input "username", "string", title:"Username", description: "", required: true, displayDuringSetup: true
+            input "username", "string", title:"Username", description: "", required: true, displayDuringSetup: true, defaultValue: "admin"
             input "password", "string", title:"User Password", description: "", required: true, displayDuringSetup: true
             input name: "logEnable", type: "bool", title: "Enable debug logging", defaultValue: true
             input name: "autoUpdate", type: "bool", title: "Enable Auto updating", defaultValue: true
@@ -54,7 +55,7 @@ def CreateChildPresence(String MAC, String label){
     return cd 
 }
 
-def CreateChildBlock(String MAC, String label, String id){
+def CreateChildBlock(String MAC, String label){
     String thisId = device.id
     def cd = getChildDevice("${thisId}-${MAC}")
     if (!cd) {
@@ -89,10 +90,56 @@ void parse(String description) {
 
 }
 
+def GetClientID2(String mac) {
+    return GetClientID(mac)
+}
+def GetClientID(String mac) {
+    
+    def wxURI2 = "https://${ip_addr}:${url_port}/api/s/default/stat/sta/${mac}"
+    
+    def requestParams2 =
+	[
+		uri:  wxURI2,
+        ignoreSSLIssues:  true,
+        headers: [ 
+                   Host: "${ip_addr}:${url_port}",
+                   
+                   Accept: "*/*",
+                   Cookie: "${settings.cookie}"
+                 ],
+	]
+ 
+    def status = ""
+    
+    try{
+    httpGet(requestParams2)
+	{
+	  response ->
+		if (response?.status == 200)
+		{
+            if (logEnable) log.info response.data
+            if (logEnable) log.info response.data.data[0]._id
+            
+            sendEvent(name: "_id", value: response.data.data[0]._id)
+            
+			status = response.data.data[0]._id
+		}
+		else
+		{
+			log.warn "${response?.status}"
+		}
+	}
+    
+    } catch (Exception e){
+        log.info e
+    }
+    return status
+}
+
 def GetKnownClients() {
     
     def wxURI2 = "https://${ip_addr}:${url_port}/api/s/default/rest/user"
-    
+    log.info wxURI2
     def requestParams2 =
 	[
 		uri:  wxURI2,
@@ -124,10 +171,12 @@ def GetKnownClients() {
         log.info e
     }
 }
-
-def GetKnownClientsDisabled(String mac) {
+def GetKnownClientsDisabledChild(String id) {
+    return GetKnownClientsDisabled(id)
+}
+def GetKnownClientsDisabled(String id) {
     
-    def wxURI2 = "https://${ip_addr}:${url_port}/api/s/default/rest/user/${mac}"
+    def wxURI2 = "https://${ip_addr}:${url_port}/api/s/default/rest/user/${id}"
     payload = "{\"type\":[\"disabled\"]}"
     
     def requestParams2 =
@@ -140,7 +189,6 @@ def GetKnownClientsDisabled(String mac) {
                    Accept: "*/*",
                    Cookie: "${settings.cookie}"
                  ],
-        //body: payload
 	]
  
     try{
@@ -149,7 +197,7 @@ def GetKnownClientsDisabled(String mac) {
 	  response ->
 		if (response?.status == 200)
 		{
-            log.info response.data
+            if (logEnable) log.info response.data
 			return response.data
 		}
 		else
