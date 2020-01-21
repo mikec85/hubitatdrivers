@@ -18,13 +18,14 @@ metadata {
         command "CreateChildPresence", ["MAC","Label"]
         command "DeleteChild", ["String"]
         command "GetKnownClients", null
-        command "GetKnownClientsDisabled", ["MAC"]
+        command "GetKnownClientsDisabled", ["_id"]
         
     }
 
     preferences {
         section("Device Settings:") {
             input "ip_addr", "string", title:"ip address", description: "", required: true, displayDuringSetup: true
+            input "url_port", "string", title:"tcp port", description: "", required: true, displayDuringSetup: true, defaultValue: "8443"
             input "username", "string", title:"Username", description: "", required: true, displayDuringSetup: true
             input "password", "string", title:"User Password", description: "", required: true, displayDuringSetup: true
             input name: "logEnable", type: "bool", title: "Enable debug logging", defaultValue: true
@@ -90,14 +91,14 @@ void parse(String description) {
 
 def GetKnownClients() {
     
-    def wxURI2 = "https://${ip_addr}:8443/api/s/default/rest/user"
+    def wxURI2 = "https://${ip_addr}:${url_port}/api/s/default/rest/user"
     
     def requestParams2 =
 	[
 		uri:  wxURI2,
         ignoreSSLIssues:  true,
         headers: [ 
-                   Host: "${ip_addr}:8443",
+                   Host: "${ip_addr}:${url_port}",
                    
                    Accept: "*/*",
                    Cookie: "${settings.cookie}"
@@ -126,7 +127,7 @@ def GetKnownClients() {
 
 def GetKnownClientsDisabled(String mac) {
     
-    def wxURI2 = "https://${ip_addr}:8443/api/s/default/rest/user/${mac}"
+    def wxURI2 = "https://${ip_addr}:${url_port}/api/s/default/rest/user/${mac}"
     payload = "{\"type\":[\"disabled\"]}"
     
     def requestParams2 =
@@ -134,7 +135,7 @@ def GetKnownClientsDisabled(String mac) {
 		uri:  wxURI2,
         ignoreSSLIssues:  true,
         headers: [ 
-                   Host: "${ip_addr}:8443",
+                   Host: "${ip_addr}:${url_port}",
                    
                    Accept: "*/*",
                    Cookie: "${settings.cookie}"
@@ -163,14 +164,14 @@ def GetKnownClientsDisabled(String mac) {
 }
 def GetSelf() {
     
-    def wxURI2 = "https://${ip_addr}:8443/api/self"
+    def wxURI2 = "https://${ip_addr}:${url_port}/api/self"
     
     def requestParams2 =
 	[
 		uri:  wxURI2,
         ignoreSSLIssues:  true,
         headers: [ 
-                   Host: "${ip_addr}:8443",
+                   Host: "${ip_addr}:${url_port}",
                    
                    Accept: "*/*",
                    Cookie: "${settings.cookie}"
@@ -198,14 +199,14 @@ def GetSelf() {
 }
 def GetClientConnected(String mac) {
     
-    def wxURI2 = "https://${ip_addr}:8443/api/s/default/stat/sta/${mac}"
+    def wxURI2 = "https://${ip_addr}:${url_port}/api/s/default/stat/sta/${mac}"
     
     def requestParams2 =
 	[
 		uri:  wxURI2,
         ignoreSSLIssues:  true,
         headers: [ 
-                   Host: "${ip_addr}:8443",
+                   Host: "${ip_addr}:${url_port}",
                    
                    Accept: "*/*",
                    Cookie: "${settings.cookie}"
@@ -237,14 +238,14 @@ def GetClientConnected(String mac) {
 
 def GetDeviceStatus(String mac) {
     
-    def wxURI2 = "https://${ip_addr}:8443/api/s/default/stat/sta/${mac}"
+    def wxURI2 = "https://${ip_addr}:${url_port}/api/s/default/stat/sta/${mac}"
     
     def requestParams2 =
 	[
 		uri:  wxURI2,
         ignoreSSLIssues:  true,
         headers: [ 
-                   Host: "${ip_addr}:8443",
+                   Host: "${ip_addr}:${url_port}",
                    
                    Accept: "*/*",
                    Cookie: "${settings.cookie}"
@@ -272,7 +273,7 @@ def GetDeviceStatus(String mac) {
 }
 def unBlockDevice(String mac) {
     
-    def wxURI2 = "https://${ip_addr}:8443/api/s/default/cmd/stamgr"
+    def wxURI2 = "https://${ip_addr}:${url_port}/api/s/default/cmd/stamgr"
     payload = "{\"cmd\":\"unblock-sta\",\"mac\":\"${mac}\"}"
     
     def requestParams2 =
@@ -280,7 +281,7 @@ def unBlockDevice(String mac) {
 		uri:  wxURI2,
         ignoreSSLIssues:  true,
         headers: [ 
-                   Host: "${ip_addr}:8443",
+                   Host: "${ip_addr}:${url_port}",
                    
                    Accept: "*/*",
                    Cookie: "${settings.cookie}"
@@ -310,7 +311,7 @@ def unBlockDevice(String mac) {
 
 def BlockDevice(String mac) {
     
-    def wxURI2 = "https://${ip_addr}:8443/api/s/default/cmd/stamgr"
+    def wxURI2 = "https://${ip_addr}:${url_port}/api/s/default/cmd/stamgr"
     payload = "{\"cmd\":\"block-sta\",\"mac\":\"${mac}\"}"
     
     def requestParams2 =
@@ -318,7 +319,7 @@ def BlockDevice(String mac) {
 		uri:  wxURI2,
         ignoreSSLIssues:  true,
         headers: [ 
-                   Host: "192.168.1.188:8443",
+                   Host: "192.168.1.188:${url_port}",
                    
                    Accept: "*/*",
                    Cookie: "${settings.cookie}"
@@ -347,14 +348,14 @@ def BlockDevice(String mac) {
 }
 def GetDevices() {
     
-    def wxURI2 = "https://${ip_addr}:8443/api/s/default/stat/sta"
+    def wxURI2 = "https://${ip_addr}:${url_port}/api/s/default/stat/sta"
     
     def requestParams2 =
 	[
 		uri:  wxURI2,
         ignoreSSLIssues:  true,
         headers: [ 
-                   Host: "${ip_addr}:8443",
+                   Host: "${ip_addr}:${url_port}",
                    
                    Accept: "*/*",
                    Cookie: "${settings.cookie}"
@@ -383,14 +384,14 @@ def GetDevices() {
 }
 def GetStatus() {
     
-    def wxURI2 = "https://${ip_addr}:8443/api/s/default/self"
+    def wxURI2 = "https://${ip_addr}:${url_port}/api/s/default/self"
     
     def requestParams2 =
 	[
 		uri:  wxURI2,
         ignoreSSLIssues:  true,
         headers: [ 
-                   Host: "${ip_addr}:8443",
+                   Host: "${ip_addr}:${url_port}",
                    
                    Accept: "*/*",
                    Cookie: "${settings.cookie}"
@@ -419,7 +420,7 @@ def GetStatus() {
 
 def Login() {
     
-    def wxURI2 = "https://${ip_addr}:8443/api/login"
+    def wxURI2 = "https://${ip_addr}:${url_port}/api/login"
     payload = "{\"username\":\"${username}\",\"password\":\"${password}\",\"remember\":\"true\"}"
     
     def requestParams2 =
