@@ -9,7 +9,8 @@ metadata {
     preferences {
         section("Device Settings:") {
             input "mac_addr", "string", title:"Mac Address of Client to Track", description: "", required: true, displayDuringSetup: true, defaultValue: ""
-            input name: "logEnable", type: "bool", title: "Enable debug logging", defaultValue: true
+            input "timedelay", "number", title:"Number of seconds before rechecking", description: "", required: true, displayDuringSetup: true, defaultValue: "600"
+            input name: "logEnable", type: "bool", title: "Enable debug logging", defaultValue: false
             input name: "autoUpdate", type: "bool", title: "Enable Auto updating", defaultValue: true
         }
     }
@@ -31,7 +32,7 @@ void parse(String description) {
 
 }
 void initialize(){
-    if (autoUpdate) runIn(600, Update)
+    if (autoUpdate) runIn(timedelay.toInteger(), Update)
     
 }
 
@@ -51,7 +52,7 @@ void Update(){
         sendEvent(name: "presence", value: "not present")
     }
     
-    if (autoUpdate) runIn(600, Update)
+    if (autoUpdate) runIn(timedelay.toInteger(), Update)
 }
 
 
