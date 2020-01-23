@@ -38,7 +38,7 @@ metadata {
 }
 void DeleteChild(String device){
     deleteChildDevice(device)
-   
+    deleteChildDevice("${thisId}-${device}")
 }
 
 def ChildGetClientConnected(String mac_addr){
