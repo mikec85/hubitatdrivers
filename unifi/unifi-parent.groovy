@@ -367,7 +367,7 @@ def BlockDevice(String mac) {
 		uri:  wxURI2,
         ignoreSSLIssues:  true,
         headers: [ 
-                   Host: "192.168.1.188:${url_port}",
+                   Host: "${ip_addr}:${url_port}",
                    
                    Accept: "*/*",
                    Cookie: "${settings.cookie}"
