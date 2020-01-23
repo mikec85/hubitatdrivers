@@ -38,6 +38,7 @@ metadata {
 }
 void DeleteChild(String device){
     deleteChildDevice(device)
+    String thisId = device.id
     deleteChildDevice("${thisId}-${device}")
 }
 
