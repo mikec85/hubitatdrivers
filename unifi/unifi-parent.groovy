@@ -1,5 +1,5 @@
 metadata {
-    definition (name: "Unifi", namespace: "unifi", author: "MC") {
+    definition (name: "Unifi", namespace: "unifi", author: "MC", importUrl: "https://raw.githubusercontent.com/mikec85/hubitatdrivers/master/unifi/unifi-parent.groovy") {
         capability "Initialize"
         capability "Switch"
         capability "PresenceSensor"
@@ -27,6 +27,7 @@ metadata {
         section("Device Settings:") {
             input "ip_addr", "string", title:"ip address", description: "", required: true, displayDuringSetup: true
             input "url_port", "string", title:"tcp port", description: "", required: true, displayDuringSetup: true, defaultValue: "8443"
+            input "unifi_site", "string", title:"Unifi Site, most likely the default", description: "", required: true, displayDuringSetup: true, defaultValue: "default"
             input "username", "string", title:"Username", description: "", required: true, displayDuringSetup: true, defaultValue: "admin"
             input "password", "string", title:"User Password", description: "", required: true, displayDuringSetup: true
             input name: "logEnable", type: "bool", title: "Enable debug logging", defaultValue: true
@@ -96,7 +97,7 @@ def GetClientID2(String mac) {
 }
 def GetClientID(String mac) {
     
-    def wxURI2 = "https://${ip_addr}:${url_port}/api/s/default/stat/sta/${mac}"
+    def wxURI2 = "https://${ip_addr}:${url_port}/api/s/${unifi_site}/stat/sta/${mac}"
     
     def requestParams2 =
 	[
@@ -139,7 +140,7 @@ def GetClientID(String mac) {
 
 def GetKnownClients() {
     
-    def wxURI2 = "https://${ip_addr}:${url_port}/api/s/default/rest/user"
+    def wxURI2 = "https://${ip_addr}:${url_port}/api/s/${unifi_site}/rest/user"
     log.info wxURI2
     def requestParams2 =
 	[
@@ -177,7 +178,7 @@ def GetKnownClientsDisabledChild(String id) {
 }
 def GetKnownClientsDisabled(String id) {
     
-    def wxURI2 = "https://${ip_addr}:${url_port}/api/s/default/rest/user/${id}"
+    def wxURI2 = "https://${ip_addr}:${url_port}/api/s/${unifi_site}/rest/user/${id}"
     payload = "{\"type\":[\"disabled\"]}"
     
     def requestParams2 =
@@ -248,7 +249,7 @@ def GetSelf() {
 }
 def GetClientConnected(String mac) {
     
-    def wxURI2 = "https://${ip_addr}:${url_port}/api/s/default/stat/sta/${mac}"
+    def wxURI2 = "https://${ip_addr}:${url_port}/api/s/${unifi_site}/stat/sta/${mac}"
     
     def requestParams2 =
 	[
@@ -287,7 +288,7 @@ def GetClientConnected(String mac) {
 
 def GetDeviceStatus(String mac) {
     
-    def wxURI2 = "https://${ip_addr}:${url_port}/api/s/default/stat/sta/${mac}"
+    def wxURI2 = "https://${ip_addr}:${url_port}/api/s/${unifi_site}/stat/sta/${mac}"
     
     def requestParams2 =
 	[
@@ -322,7 +323,7 @@ def GetDeviceStatus(String mac) {
 }
 def unBlockDevice(String mac) {
     
-    def wxURI2 = "https://${ip_addr}:${url_port}/api/s/default/cmd/stamgr"
+    def wxURI2 = "https://${ip_addr}:${url_port}/api/s/${unifi_site}/cmd/stamgr"
     payload = "{\"cmd\":\"unblock-sta\",\"mac\":\"${mac}\"}"
     
     def requestParams2 =
@@ -360,7 +361,7 @@ def unBlockDevice(String mac) {
 
 def BlockDevice(String mac) {
     
-    def wxURI2 = "https://${ip_addr}:${url_port}/api/s/default/cmd/stamgr"
+    def wxURI2 = "https://${ip_addr}:${url_port}/api/s/${unifi_site}/cmd/stamgr"
     payload = "{\"cmd\":\"block-sta\",\"mac\":\"${mac}\"}"
     
     def requestParams2 =
@@ -368,7 +369,7 @@ def BlockDevice(String mac) {
 		uri:  wxURI2,
         ignoreSSLIssues:  true,
         headers: [ 
-                   Host: "${ip_addr}:${url_port}",
+                   Host: "192.168.1.188:${url_port}",
                    
                    Accept: "*/*",
                    Cookie: "${settings.cookie}"
@@ -397,7 +398,7 @@ def BlockDevice(String mac) {
 }
 def GetDevices() {
     
-    def wxURI2 = "https://${ip_addr}:${url_port}/api/s/default/stat/sta"
+    def wxURI2 = "https://${ip_addr}:${url_port}/api/s/${unifi_site}/stat/sta"
     
     def requestParams2 =
 	[
@@ -433,7 +434,7 @@ def GetDevices() {
 }
 def GetStatus() {
     
-    def wxURI2 = "https://${ip_addr}:${url_port}/api/s/default/self"
+    def wxURI2 = "https://${ip_addr}:${url_port}/api/s/${unifi_site}/self"
     
     def requestParams2 =
 	[
