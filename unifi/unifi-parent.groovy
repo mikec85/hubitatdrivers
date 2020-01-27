@@ -5,7 +5,7 @@ metadata {
         capability "PresenceSensor"
         
         attribute "cookie", "string"
-        
+        attribute "CookieValid", "boolean"
         
         command "GetDevices", null
         command "GetStatus", null
@@ -21,6 +21,8 @@ metadata {
         command "GetKnownClients", null
         command "GetKnownClientsDisabled", ["_id"]
         command "GetClientID", ["MAC"]
+        
+        command "CheckIfCookieValid", null
     }
 
     preferences {
@@ -30,6 +32,7 @@ metadata {
             input "unifi_site", "string", title:"Unifi Site, most likely the default", description: "", required: true, displayDuringSetup: true, defaultValue: "default"
             input "username", "string", title:"Username", description: "", required: true, displayDuringSetup: true, defaultValue: "admin"
             input "password", "string", title:"User Password", description: "", required: true, displayDuringSetup: true
+            input "timedelaycookie", "number", title:"Number of seconds before checking if login works", description: "", required: true, displayDuringSetup: true, defaultValue: "600"
             input name: "logEnable", type: "bool", title: "Enable debug logging", defaultValue: true
             input name: "autoUpdate", type: "bool", title: "Enable Auto updating", defaultValue: true
         }
@@ -68,25 +71,9 @@ def CreateChildBlock(String MAC, String label){
 }
 
 void initialize(){
-    checkclient()
-    if (autoUpdate) runIn(600, checkclient)
-    
+    if (autoUpdate) runIn(timedelaycookie.toInteger(), CheckIfCookieValid)
 }
 
-
-def checkclient(){
-    status = GetClientConnected(mac_addr)
-    if (logEnable) log.info status
-    
-    if (status) {
-        sendEvent(name: "presence", value: "present")
-    } else {
-        sendEvent(name: "presence", value: "not present")
-    }
-    
-    if (autoUpdate) runIn(600, checkclient)
-    
-}
 void parse(String description) {
     
 
@@ -212,6 +199,18 @@ def GetKnownClientsDisabled(String id) {
         log.info e
     }
 }
+
+def CheckIfCookieValid() {
+    tempstatus = GetSelf()
+    
+    if (tempstatus.toString().contains("data=[{name")) {
+        sendEvent(name: "CookieValid", value: true)
+    } else {
+        sendEvent(name: "CookieValid", value: false)
+        Login()
+    }
+    
+}
 def GetSelf() {
     
     def wxURI2 = "https://${ip_addr}:${url_port}/api/self"
@@ -227,7 +226,7 @@ def GetSelf() {
                    Cookie: "${settings.cookie}"
                  ]
 	]
-    
+    rdata = ""
     try{
     httpGet(requestParams2)
 	{
@@ -235,7 +234,7 @@ def GetSelf() {
 		if (response?.status == 200)
 		{
             if (logEnable) log.info response.data
-			return response.data
+			rdata = response.data
 		}
 		else
 		{
@@ -246,6 +245,7 @@ def GetSelf() {
     } catch (Exception e){
         log.info e
     }
+    return rdata
 }
 def GetClientConnected(String mac) {
     
@@ -277,11 +277,21 @@ def GetClientConnected(String mac) {
 		else
 		{
 			log.warn "${response?.status}"
+            
+            if(response?.status.contains("groovyx.net.http.HttpResponseException"))  {
+                if (logEnable) log.info "check login"
+                Login()
+            }
 		}
 	}
     
     } catch (Exception e){
         log.info e
+        
+        if(e.toString().contains( "groovyx.net.http.HttpResponseException:") )  {
+            if (logEnable) log.info "check login"
+            Login()
+        }
     }
     return status
 }
