@@ -34,7 +34,7 @@ metadata {
             input "password", "string", title:"User Password", description: "", required: true, displayDuringSetup: true
             input "timedelaycookie", "number", title:"Number of seconds before checking if login works", description: "", required: true, displayDuringSetup: true, defaultValue: "600"
             input name: "logEnable", type: "bool", title: "Enable debug logging", defaultValue: true
-            input name: "autoUpdate", type: "bool", title: "Enable Auto updating", defaultValue: true
+            input name: "autoUpdate", type: "bool", title: "Enable Auto Testing for Valid Login", defaultValue: true
         }
     }
 
