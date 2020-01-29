@@ -1,0 +1,72 @@
+#include <HttpClient.h>
+
+
+boolean sentemail = false;
+unsigned int count = 0;
+unsigned int levelpercent = 0;
+static const char ntpServerName[] = "us.pool.ntp.org";
+const int timeZone = -6;
+time_t getNtpTime();
+void sendNTPpacket(IPAddress &address);
+int dayofweek = 0;
+boolean wemailsent = false;
+
+unsigned int minlev = 180;  // needs to be your minimum value
+unsigned int maxlev = 3300; // needs to be your maximum value
+HttpClient http;
+http_request_t request;
+http_response_t response;
+
+http_header_t headers[] = {
+    { "Accept" , "*/*"},
+    { NULL, NULL } // NOTE: Always terminate headers will NULL
+};
+
+void setup() {
+
+  Particle.syncTime();
+  waitUntil(Particle.syncTimeDone);
+  Time.zone(-6);
+  Particle.publish(String(Time.hour()) + " " + String(Time.minute()));
+  
+}
+
+void sendhttp(int level, int level2){
+    
+  String temp = String(level);
+  String temp2 = String(level2);
+    request.hostname = "<ip>";  // need to put your ip here
+    request.port = 80;
+    request.path = "/apps/api/129/devices/<device>/setLevel/" + temp + "-"  + temp2 + "?access_token=<token>"; // need to put your hubitat device id and token here.
+      
+    Particle.publish(request.path);
+      
+    http.get(request, response, headers); 
+    Particle.publish("pmr-photon-1", String::format("Response.status: %d Response.body: %s", response.status, (const char*)response.body));
+    
+}
+
+
+void loop() {
+
+  count = analogRead(A0);
+  
+  if (count < 101) {
+    count=102;
+  }
+
+  levelpercent =  map(count, minlev, maxlev, 0, 100);
+  
+  Particle.publish(String(count) + " " + String(levelpercent));
+  
+  sendhttp(levelpercent,count);
+
+  dayofweek=Time.weekday();
+   
+
+  //delay(6000);
+  delay(600000);
+  
+}
+
+
