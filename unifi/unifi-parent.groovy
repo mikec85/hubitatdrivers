@@ -202,14 +202,15 @@ def GetKnownClientsDisabled(String id) {
 
 def CheckIfCookieValid() {
     tempstatus = GetSelf()
-    
+    if (logEnable) log.info tempstatus
+	
     if (tempstatus.toString().contains("data=[{name")) {
         sendEvent(name: "CookieValid", value: true)
     } else {
         sendEvent(name: "CookieValid", value: false)
         Login()
     }
-    
+    if (autoUpdate) runIn(timedelaycookie.toInteger(), CheckIfCookieValid)
 }
 def GetSelf() {
     
