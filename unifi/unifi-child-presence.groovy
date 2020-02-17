@@ -1,7 +1,7 @@
 metadata {
     definition (name: "Unifi Child Presence", namespace: "unifi", author: "MC") {
         capability "PresenceSensor"
-        
+        capability "Initialize"
       
         command "Update", null
     }
