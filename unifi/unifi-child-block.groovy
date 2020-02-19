@@ -1,7 +1,7 @@
 metadata {
     definition (name: "Unifi Child Block", namespace: "unifi", author: "MC") {
         capability "Switch"
-        
+        capability "Initialize"
       
         command "Update", null
         command "GetClientID", null
