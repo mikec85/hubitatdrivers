@@ -1,5 +1,5 @@
 metadata {
-    definition (name: "Unifi Child Presence", namespace: "unifi", author: "MC") {
+    definition (name: "Unifi Child Presence", namespace: "unifi", author: "MC", importUrl: "https://raw.githubusercontent.com/mikec85/hubitatdrivers/master/unifi/unifi-child-presence.groovy") {
         capability "PresenceSensor"
         capability "Initialize"
       
