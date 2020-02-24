@@ -1,5 +1,5 @@
 metadata {
-    definition (name: "Unifi Child Block", namespace: "unifi", author: "MC") {
+    definition (name: "Unifi Child Block", namespace: "unifi", author: "MC", importUrl: "https://raw.githubusercontent.com/mikec85/hubitatdrivers/master/unifi/unifi-child-block.groovy") {
         capability "Switch"
         capability "Initialize"
       
