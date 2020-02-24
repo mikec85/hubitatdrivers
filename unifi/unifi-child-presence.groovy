@@ -43,12 +43,12 @@ void setmac(String MAC) {
 void Update(){
     def status2 = false
     status2 = parent.ChildGetClientConnected(mac_addr)
-    
+    String thisId = device.id
     if (status2) {
-        log.info "present"
+        if (logEnable) log.info "present  ${thisId}  ${mac_addr}"
         sendEvent(name: "presence", value: "present")
     } else {
-        log.info "not present"
+        if (logEnable) log.info "not present  ${thisId}  ${mac_addr}"
         sendEvent(name: "presence", value: "not present")
     }
     
