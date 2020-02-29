@@ -272,7 +272,7 @@ def GetClientConnected(String mac) {
 	  response ->
 		if (response?.status == 200)
 		{
-            if (logEnable) log.info response.data
+                        if (logEnable) log.info response.data
 			status = true
 		}
 		else
@@ -503,7 +503,7 @@ def Login() {
             
             cookie2=""
             response.getHeaders('Set-Cookie').each {
-                log.info it.value.split(';')[0]
+                if (logEnable) log.info it.value.split(';')[0]
                 cookie2 = cookie2 + it.value.split(';')[0] + ";"
             }
             
