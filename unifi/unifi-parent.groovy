@@ -254,9 +254,9 @@ def GetClientConnected(String mac) {
     
     def requestParams2 =
 	[
-		uri:  wxURI2,
-        ignoreSSLIssues:  true,
-        headers: [ 
+	   uri:  wxURI2,
+           ignoreSSLIssues:  true,
+           headers: [ 
                    Host: "${ip_addr}:${url_port}",
                    
                    Accept: "*/*",
@@ -303,9 +303,9 @@ def GetDeviceStatus(String mac) {
     
     def requestParams2 =
 	[
-		uri:  wxURI2,
-        ignoreSSLIssues:  true,
-        headers: [ 
+          uri:  wxURI2,
+          ignoreSSLIssues:  true,
+          headers: [ 
                    Host: "${ip_addr}:${url_port}",
                    
                    Accept: "*/*",
@@ -319,7 +319,7 @@ def GetDeviceStatus(String mac) {
 	  response ->
 		if (response?.status == 200)
 		{
-            if (logEnable) log.info response.data
+                        if (logEnable) log.info response.data
 			return response.data
 		}
 		else
@@ -329,7 +329,7 @@ def GetDeviceStatus(String mac) {
 	}
     
     } catch (Exception e){
-        log.info e
+        if (logEnable) log.info e
     }
 }
 def unBlockDevice(String mac) {
