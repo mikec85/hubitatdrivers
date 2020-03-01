@@ -287,8 +287,7 @@ def GetClientConnected(String mac) {
 	}
     
     } catch (Exception e){
-        log.info e
-        
+        if (logEnable) log.info e     
         if(e.toString().contains( "groovyx.net.http.HttpResponseException:") )  {
             if (logEnable) log.info "check login"
             Login()
