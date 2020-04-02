@@ -1,5 +1,5 @@
 metadata {
-    definition (name: "OctoPrint", namespace: "OctoPrint", author: "MC", importUrl: "https://raw.githubusercontent.com/") {
+    definition (name: "OctoPrint", namespace: "OctoPrint", author: "MC", importUrl: "https://raw.githubusercontent.com/mikec85/hubitatdrivers/master/octoprint/OctoPrint.groovy") {
         capability "Initialize"
         capability "Switch"
         capability "PresenceSensor"
