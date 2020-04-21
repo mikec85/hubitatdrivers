@@ -68,16 +68,21 @@ def GetJob() {
 		if (response?.status == 200)
 		{
 
-			if (response.data.progress.completion != null)
-            		{
-                		sendEvent(name: "completion", value: response.data.progress.completion)
-            		}
-            		if (response.data.progress.printTimeLeft != null)
-            		{
-            			sendEvent(name: "printTimeLeft", value: response.data.progress.printTimeLeft/60 )
-            		}
- 		        sendEvent(name: "state", value: response.data.state)
+		if (response.data.progress.completion != null)
+            	{
+                	sendEvent(name: "completion", value: response.data.progress.completion)
+            	} else {
+                    sendEvent(name: "completion", value: 0 )
+                }
+            if (response.data.progress.printTimeLeft != null)
+            	{
+            		sendEvent(name: "printTimeLeft", value: response.data.progress.printTimeLeft/60 )
+                } else {
+                    sendEvent(name: "printTimeLeft", value: 0 )
+                }
+ 		    sendEvent(name: "state", value: response.data.state)
             
+            if (logEnable) log.info response.data
 			toReturn = response.data.toString() 
 		}
 		else
