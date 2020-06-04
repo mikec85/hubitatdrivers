@@ -1,5 +1,5 @@
 metadata {
-    definition (name: "Pool Aqualink Parent", namespace: "aqualink", author: "MC") {
+    definition (name: "Pool Aqualink Parent", namespace: "aqualink", author: "MC", importUrl: "https://raw.githubusercontent.com/mikec85/hubitatdrivers/master/ParentChild/aqualink-driver-parent") {
         capability "Initialize"
         capability "Switch"
         
@@ -31,6 +31,7 @@ metadata {
             input name: "aux_EA", type: "bool", title: "Enable AUX EA Port", defaultValue: false
             input name: "SpaTemp", type: "bool", title: "Enable Spa Temperature", defaultValue: false
             input name: "AirTemp", type: "bool", title: "Enable Air Temperature", defaultValue: false
+            input name: "SpaPump", type: "bool", title: "Enable Spa Pump", defaultValue: false
         }
     }
 
@@ -77,7 +78,7 @@ void uninstalled() {
     deleteChildDevice("${thisId}-Pool_Temp")
     deleteChildDevice("${thisId}-Spa_Temp")
     deleteChildDevice("${thisId}-Air_Temp")
-    
+    deleteChildDevice("${thisId}-Spa_Pump")
     
 }
 
@@ -150,7 +151,9 @@ void CreateChildren(){
     if(AirTemp){
         CreateChildTemp("Air_Temp", "Air Temp" )
     }
-    
+    if(SpaPump){
+        CreateChild("Spa_Pump", "Spa Pump", "0" )
+    }
 }
 
 def fetchChild(String Unit){
@@ -218,11 +221,15 @@ void updatedeviceinfo(){
     if (logEnable) log.info "pool pump temp  ${devices.home_screen[5].pool_temp}"
     
     try {  notifychild("Pool_Temp",devices.home_screen[5].pool_temp, "Pool Temp", "0", "0" )  } catch (Exception e) { log.warn "pool temp failed: ${e.message}" }
+    
     if(SpaTemp){
       try {  notifychild("Spa_Temp",devices.home_screen[4].spa_temp, "Spa Temp", "0", "0" )  } catch (Exception e) { log.warn "Spa temp failed: ${e.message}" }
     }    
     if(AirTemp){
       try {  notifychild("Air_Temp",devices.home_screen[6].air_temp, "Air Temp", "0", "0" )  } catch (Exception e) { log.warn "Air temp failed: ${e.message}" }
+    } 
+    if(SpaPump){
+      try {  notifychild("Spa_Pump",devices.home_screen[12].spa_pump, "SpaPump", "SpaPump", "0" )  } catch (Exception e) { log.warn "Spa Pump failed: ${e.message}" }
     }  
 }
 
@@ -394,6 +401,39 @@ def TogglePoolPump() {
 def OperatePoolPump() {
     
     def wxURI2 = "https://iaqualink-api.realtime.io/v1/mobile/session.json?actionID=command&command=set_pool_pump&serial=${serial_number}&sessionID=${session_id}"
+    
+    def requestParams2 =
+	[
+		uri:  wxURI2,
+	]
+    httpGet(requestParams2)
+	{
+	  response ->
+		if (response?.status == 200)
+		{
+            if (logEnable) log.info response.data
+			return response.data
+		}
+		else
+		{
+			log.warn "${response?.status}"
+		}
+	}
+    
+    
+}
+def ToggleSpaPump() {
+    
+    if(!session_id) {
+        LoginGetSession()
+    }
+    
+    OperateSpaPump();
+    
+}
+def OperateSpaPump() {
+    
+    def wxURI2 = "https://iaqualink-api.realtime.io/v1/mobile/session.json?actionID=command&command=set_spa_pump&serial=${serial_number}&sessionID=${session_id}"
     
     def requestParams2 =
 	[
