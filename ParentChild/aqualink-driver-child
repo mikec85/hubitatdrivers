@@ -1,5 +1,5 @@
 metadata {
-    definition (name: "Pool Aqualink Child", namespace: "aqualink", author: "MC") {
+    definition (name: "Pool Aqualink Child", namespace: "aqualink", author: "MC", importUrl: "https://raw.githubusercontent.com/mikec85/hubitatdrivers/master/ParentChild/aqualink-driver-child") {
         capability "Switch"
         
         attribute "contact", "string"
@@ -70,7 +70,7 @@ void parsechild(String status2, String label, String devtype, String subtype) {
 
 void on(){
     unit=device.deviceNetworkId.substring(device.deviceNetworkId.indexOf("-")+1)
-    //log.info "${unit}"
+    if (logEnable) log.info "The unit ${unit}"
     parent.rundeviceupdate()
     //log.info "  ${device.currentValue('switch')} "
     //log.info "  ${device.currentValue('subtype')}"
@@ -80,6 +80,8 @@ void on(){
         if (logEnable) log.info "Toggle Device ON  ${device}"
         if(unit == "FilterPump"){
             parent.TogglePoolPump()  
+        } else if(unit == "Spa_Pump"){
+            parent.ToggleSpaPump()
         } else if(devtype == "2"){
             parent.OperateColorLightParent(unit,settings.lightcolor)
         } else {
@@ -94,6 +96,7 @@ void on(){
 
 void off(){
     unit=device.deviceNetworkId.substring(device.deviceNetworkId.indexOf("-")+1)
+    if (logEnable) log.info "The unit ${unit}"
     parent.rundeviceupdate()
     log.info "${unit}    ${device.currentValue('switch')} "
     devtype = device.currentValue('devtype')
@@ -102,6 +105,8 @@ void off(){
         if (logEnable) log.info "Toggle Device OFF  ${device}"
         if(unit == "FilterPump"){
             parent.TogglePoolPump()  
+        } else if(unit == "Spa_Pump"){
+            parent.ToggleSpaPump()
         } else if(devtype == "2"){
             parent.OperateColorLightParent(unit,"0")
         } else {
