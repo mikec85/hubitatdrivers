@@ -36,6 +36,8 @@ metadata {
             input name: "SpaTemp", type: "bool", title: "Enable Spa Temperature", defaultValue: false
             input name: "AirTemp", type: "bool", title: "Enable Air Temperature", defaultValue: false
             input name: "SpaPump", type: "bool", title: "Enable Spa Pump", defaultValue: false
+            input name: "SpaHeater", type: "bool", title: "Enable Spa Heater", defaultValue: false
+            input name: "PoolHeater", type: "bool", title: "Enable Pool Heater", defaultValue: false
             
         }
     }
@@ -113,6 +115,15 @@ def CreateChildTemp(String Unit, String label){
     return cd 
 }
 
+def CreateChildHeater(String Unit, String label){
+    String thisId = device.id
+    def cd = getChildDevice("${thisId}-${Unit}")
+    if (!cd) {
+        cd = addChildDevice( "Pool Aqualink Child Heater", "${thisId}-${Unit}", [name: "${label}", isComponent: true])
+    }
+    return cd 
+}
+
 void updatecolor(){
     device.updateSetting("colorlightenable", [value: true, type: "bool"])
     device.updateSetting("devtype", [value: "2", type: "String"])
@@ -158,6 +169,12 @@ void CreateChildren(){
     }
     if(SpaPump){
         CreateChild("Spa_Pump", "Spa Pump", "0" )
+    }
+    if(SpaHeater){
+        CreateChildHeater("Spa_Heater", "Spa Heater")
+    }
+    if(PoolHeater){
+        CreateChildHeater("Pool_Heater", "Pool Heater" )
     }
 }
 
@@ -235,6 +252,13 @@ void updatedeviceinfo(){
     } 
     if(SpaPump){
       try {  notifychild("Spa_Pump",devices.home_screen[12].spa_pump, "SpaPump", "SpaPump", "0" )  } catch (Exception e) { log.warn "Spa Pump failed: ${e.message}" }
+    }  
+    
+    if(SpaHeater){
+      try {  notifychild("Spa_Heater",devices.home_screen[13].spa_heater, "Spa_Heater", "Spa_Heater", "0" )  } catch (Exception e) { log.warn "Spa_Heater failed: ${e.message}" }
+    }  
+    if(PoolHeater){
+      try {  notifychild("Pool_Heater",devices.home_screen[14].pool_heater, "Pool_Heater", "Pool_Heater", "0" )  } catch (Exception e) { log.warn "Pool_Heater failed: ${e.message}" }
     }  
 }
 
@@ -471,6 +495,37 @@ def SetHeater(String type, String temp) {
     }
     
     def wxURI2 = "https://iaqualink-api.realtime.io/v1/mobile/session.json?actionID=command&command=set_temps&serial=${serial_number}&sessionID=${session_id}&${type2}=${temp}"
+    
+    def requestParams2 =
+	[
+		uri:  wxURI2,
+	]
+    httpGet(requestParams2)
+	{
+	  response ->
+		if (response?.status == 200)
+		{
+            if (logEnable) log.info response.data
+			return response.data
+		}
+		else
+		{
+			log.warn "${response?.status}"
+		}
+	}
+    
+    
+}
+def ToggleHeater(String type) {
+    
+    if(type=="Spa_Heater"){
+        type2="set_spa_heater"
+    }
+    if(type=="Pool_Heater"){
+        type2="set_pool_heater"
+    }
+    
+    def wxURI2 = "https://iaqualink-api.realtime.io/v1/mobile/session.json?actionID=command&command=${type2}&serial=${serial_number}&sessionID=${session_id}"
     
     def requestParams2 =
 	[
