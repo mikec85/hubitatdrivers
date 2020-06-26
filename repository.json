@@ -1,0 +1,13 @@
+{
+  "author": "Mike Coffey",
+  "gitHubUrl": "https://github.com/mikec85",
+  "payPalUrl": "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=R6M87FLA29TLS&source=url",
+  "packages": [
+    {
+      "name": "Aqualink-Driver",
+      "category": "Integrations",
+      "location": "https://raw.githubusercontent.com/mikec85/hubitatdrivers/master/aqualink/packageManifest.json",
+      "description": "Aqualink-Driver"
+    }
+  ]
+}
