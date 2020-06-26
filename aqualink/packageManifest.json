@@ -1,1 +1,37 @@
-
+{
+  "packageName": "Aqualink-Driver",
+  "author": "Mike Coffey",
+  "version": "1.0",
+  "minimumHEVersion": "2.1.9",
+  "dateReleased": "2020-06-25",
+  "drivers": [
+    {
+      "id": "3091b33c-e665-4420-962f-6895577dede1",
+      "name": "Pool Aqualink Parent",
+      "namespace": "aqualink",
+      "location": "https://raw.githubusercontent.com/mikec85/hubitatdrivers/master/aqualink/aqualink-driver-parent.groovy",
+      "required": true
+    },
+    {
+      "id": "7d2ff3ad-8ef3-44d3-bdca-13ba8864d3d2",
+      "name": "Pool Aqualink Child",
+      "namespace": "aqualink",
+      "location": "https://raw.githubusercontent.com/mikec85/hubitatdrivers/master/aqualink/aqualink-driver-child.groovy",
+      "required": true
+    },
+    {
+      "id": "8c2d751f-2466-48e5-811c-036c21b5e89b",
+      "name": "Pool Aqualink Child Temps",
+      "namespace": "aqualink",
+      "location": "https://raw.githubusercontent.com/mikec85/hubitatdrivers/master/aqualink/aqualink-driver-child-temps.groovy",
+      "required": true
+    },
+    {
+      "id": "7297b403-2194-441d-8d8f-b9ab24b3c1b9",
+      "name": "Pool Aqualink Child Heater",
+      "namespace": "aqualink",
+      "location": "https://raw.githubusercontent.com/mikec85/hubitatdrivers/master/aqualink/aqualink-driver-child-heater.groovy",
+      "required": false
+    }
+  ]
+}
