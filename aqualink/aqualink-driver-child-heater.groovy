@@ -1,5 +1,5 @@
 metadata {
-    definition (name: "Pool Aqualink Child Heater", namespace: "aqualink", author: "MC", importUrl: "https://raw.githubusercontent.com/mikec85/hubitatdrivers/master/ParentChild/aqualink-driver-child-heater") {
+    definition (name: "Pool Aqualink Child Heater", namespace: "aqualink", author: "MC", importUrl: "https://raw.githubusercontent.com/mikec85/hubitatdrivers/master/aqualink/aqualink-driver-child-heater.groovy") {
         capability "Switch"
         
         attribute "contact", "string"
