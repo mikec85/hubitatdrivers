@@ -1,5 +1,5 @@
 metadata {
-    definition (name: "Pool Aqualink Parent", namespace: "aqualink", author: "MC", importUrl: "https://raw.githubusercontent.com/mikec85/hubitatdrivers/master/ParentChild/aqualink-driver-parent") {
+    definition (name: "Pool Aqualink Parent", namespace: "aqualink", author: "MC", importUrl: "https://raw.githubusercontent.com/mikec85/hubitatdrivers/master/aqualink/aqualink-driver-parent.groovy") {
         capability "Initialize"
         capability "Switch"
         
