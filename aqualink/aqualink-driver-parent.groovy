@@ -38,7 +38,7 @@ metadata {
             input name: "SpaPump", type: "bool", title: "Enable Spa Pump", defaultValue: false
             input name: "SpaHeater", type: "bool", title: "Enable Spa Heater", defaultValue: false
             input name: "PoolHeater", type: "bool", title: "Enable Pool Heater", defaultValue: false
-            
+            input name: "SolarHeater", type: "bool", title: "Enable Solar Heater", defaultValue: false
         }
     }
 
@@ -176,6 +176,9 @@ void CreateChildren(){
     if(PoolHeater){
         CreateChildHeater("Pool_Heater", "Pool Heater" )
     }
+    if(SolarHeater){
+        CreateChildHeater("Solar_Heater", "Solar Heater" )
+    }
 }
 
 def fetchChild(String Unit){
@@ -259,7 +262,11 @@ void updatedeviceinfo(){
     }  
     if(PoolHeater){
       try {  notifychild("Pool_Heater",devices.home_screen[14].pool_heater, "Pool_Heater", "Pool_Heater", "0" )  } catch (Exception e) { log.warn "Pool_Heater failed: ${e.message}" }
+    }
+    if(SolarHeater){
+      try {  notifychild("Solar_Heater",devices.home_screen[15].solar_heater, "Solar_Heater", "Solar_Heater", "0" )  } catch (Exception e) { log.warn "Solar_Heater failed: ${e.message}" }
     }  
+    
 }
 
 def LoginGetSession(){
