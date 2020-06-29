@@ -1,5 +1,5 @@
 metadata {
-    definition (name: "Pool Aqualink Child Temps", namespace: "aqualink", author: "MC", importUrl: "https://raw.githubusercontent.com/mikec85/hubitatdrivers/master/ParentChild/aqualink-driver-child-temps-GoogleThermostat") {
+    definition (name: "Pool Aqualink Child Temps", namespace: "aqualink", author: "MC", importUrl: "https://raw.githubusercontent.com/mikec85/hubitatdrivers/master/aqualink/aqualink-driver-child-temps.groovy") {
         capability "Thermostat"
         capability "Initialize"
         
