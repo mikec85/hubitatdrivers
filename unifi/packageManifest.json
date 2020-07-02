@@ -1,0 +1,30 @@
+{
+  "packageName": "UniFi",
+  "author": "Mike Coffey",
+  "version": "1.0.0",
+  "minimumHEVersion": "2.1.8.117",
+  "dateReleased": "2020-07-02",
+  "drivers": [
+    {
+      "id": "c99887d3-d5c9-48e3-807a-4956dac7ef78",
+      "name": "Unifi",
+      "namespace": "unifi",
+      "location": "https://raw.githubusercontent.com/mikec85/hubitatdrivers/master/unifi/unifi-parent.groovy",
+      "required": true
+    },
+    {
+      "id": "37b2dde8-9b4e-4533-adec-4e30e5782b15",
+      "name": "Unifi Child Presence",
+      "namespace": "unifi",
+      "location": "https://raw.githubusercontent.com/mikec85/hubitatdrivers/master/unifi/unifi-child-presence.groovy",
+      "required": false
+    },
+    {
+      "id": "2fcda575-277e-4932-a0b1-d4ce40ff676c",
+      "name": "Unifi Child Block",
+      "namespace": "unifi",
+      "location": "https://raw.githubusercontent.com/mikec85/hubitatdrivers/master/unifi/unifi-child-block.groovy",
+      "required": false
+    }
+  ]
+}
