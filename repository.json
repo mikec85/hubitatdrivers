@@ -7,7 +7,7 @@
       "name": "Aqualink-Driver",
       "category": "Integrations",
       "location": "https://raw.githubusercontent.com/mikec85/hubitatdrivers/master/aqualink/packageManifest.json",
-      "description": "Aqualink-Driver"
+      "description": "Aqualink Integration for Controlling your Pool Equipment"
     },
     {
       "name": "UniFi-Driver",
