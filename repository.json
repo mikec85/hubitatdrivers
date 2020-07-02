@@ -8,6 +8,12 @@
       "category": "Integrations",
       "location": "https://raw.githubusercontent.com/mikec85/hubitatdrivers/master/aqualink/packageManifest.json",
       "description": "Aqualink-Driver"
+    },
+    {
+      "name": "UniFi-Driver",
+      "category": "Integrations",
+      "location": "https://raw.githubusercontent.com/mikec85/hubitatdrivers/master/unifi/packageManifest.json",
+      "description": "UniFi Integration with Hubitat for tracking precense and blocking network devices"
     }
   ]
 }
