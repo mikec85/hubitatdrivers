@@ -3,7 +3,7 @@
   "author": "Mike Coffey",
   "version": "1.0.2",
   "minimumHEVersion": "2.1.9",
-  releaseNotes": "Updated to catch errors with systems that have a few less Aux ports ",
+  "releaseNotes": "Updated to catch errors with systems that have a few less Aux ports ",
   "dateReleased": "2020-06-25",
   "drivers": [
     {
