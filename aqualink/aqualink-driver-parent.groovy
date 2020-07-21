@@ -155,8 +155,8 @@ void CreateChildren(){
     CreateChild("3", devices.devices_screen[5].aux_3[1].label, devices.devices_screen[5].aux_3[3].type )
     CreateChild("4", devices.devices_screen[6].aux_4[1].label, devices.devices_screen[6].aux_4[3].type )
     CreateChild("5", devices.devices_screen[7].aux_5[1].label, devices.devices_screen[7].aux_5[3].type )
-    CreateChild("6", devices.devices_screen[8].aux_6[1].label, devices.devices_screen[8].aux_6[3].type )
-    CreateChild("7", devices.devices_screen[9].aux_7[1].label, devices.devices_screen[9].aux_7[3].type )
+    try { CreateChild("6", devices.devices_screen[8].aux_6[1].label, devices.devices_screen[8].aux_6[3].type ) } catch (Exception e) { log.warn "CreateChild 6 failed: ${e.message}" }
+    try { CreateChild("7", devices.devices_screen[9].aux_7[1].label, devices.devices_screen[9].aux_7[3].type ) } catch (Exception e) { log.warn "CreateChild 7 failed: ${e.message}" }
     if (aux_EA) { CreateChild("8", devices.devices_screen[10].aux_EA[1].label, devices.devices_screen[10].aux_EA[3].type ) } 
     CreateChild("FilterPump", "FilterPump", "0")
     
