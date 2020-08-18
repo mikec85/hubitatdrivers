@@ -41,10 +41,26 @@ void setmac(String MAC) {
 }
 
 void Update(){
-    def status2 = false
+    def status3 = false
     status2 = parent.ChildGetClientConnected(mac_addr)
     
-    if (status2) {
+    if(status2.equals("")) {
+        status3 = false
+    } else {
+        status3 = true
+        log.info status2.data[0].hostname
+        sendEvent(name: "hostname", value: status2.data[0].hostname)
+        log.info status2.data[0].last_seen
+        sendEvent(name: "last_seen", value: status2.data[0].last_seen)
+        sendEvent(name: "essid", value: status2.data[0].essid)
+        sendEvent(name: "network", value: status2.data[0].network)
+        sendEvent(name: "radio_proto", value: status2.data[0].radio_proto) 
+        sendEvent(name: "ap_mac", value: status2.data[0].ap_mac) 
+        apinfo = parent.GetAPStatus(status2.data[0].ap_mac)
+        sendEvent(name: "ap_name", value: apinfo.data[0].name) 
+    }
+    
+    if (status3) {
         if (logEnable) log.info "present  ${device.getName()}  ${mac_addr}"
         sendEvent(name: "presence", value: "present")
     } else {
