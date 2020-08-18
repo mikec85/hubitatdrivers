@@ -3,6 +3,13 @@ metadata {
         capability "PresenceSensor"
         capability "Initialize"
       
+        attribute "last_seen", "string"
+        attribute "essid", "string"
+        attribute "network", "string"
+        attribute "radio_proto", "string"
+        attribute "ap_mac", "string"
+        attribute "ap_name", "string"
+        
         command "Update", null
     }
 
@@ -48,16 +55,24 @@ void Update(){
         status3 = false
     } else {
         status3 = true
-        log.info status2.data[0].hostname
-        sendEvent(name: "hostname", value: status2.data[0].hostname)
-        log.info status2.data[0].last_seen
+        
+        sendEvent([name: "hostname", value: status2.data[0].hostname])
         sendEvent(name: "last_seen", value: status2.data[0].last_seen)
         sendEvent(name: "essid", value: status2.data[0].essid)
         sendEvent(name: "network", value: status2.data[0].network)
         sendEvent(name: "radio_proto", value: status2.data[0].radio_proto) 
         sendEvent(name: "ap_mac", value: status2.data[0].ap_mac) 
+        
+        state.hostname = status2.data[0].hostname
+        state.last_seen = status2.data[0].last_seen
+        state.essid = status2.data[0].essid
+        state.network = status2.data[0].network
+        state.radio_proto = status2.data[0].radio_proto
+        state.ap_mac = status2.data[0].ap_mac
+        
         apinfo = parent.GetAPStatus(status2.data[0].ap_mac)
-        sendEvent(name: "ap_name", value: apinfo.data[0].name) 
+        sendEvent(name: "ap_name", value: apinfo.data[0].name)
+        state.ap_name = apinfo.data[0].name
     }
     
     if (status3) {
