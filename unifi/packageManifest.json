@@ -1,9 +1,9 @@
 {
   "packageName": "UniFi",
   "author": "Mike Coffey",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "minimumHEVersion": "2.1.8.117",
-  "releaseNotes": "Updated Presence funtion to include additional data such as hostname in unifi, connected ssid, connect network, AP mac and name, radio protocol",
+  "releaseNotes": "Updated code to catch a possible Ghosting issue with ap_name suggested by ajburgh",
   "dateReleased": "2020-08-17",
   "drivers": [
     {
