@@ -264,7 +264,7 @@ def GetClientConnected(String mac) {
                  ],
 	]
  
-    def status = false
+    def status = ""
     
     try{
     httpGet(requestParams2)
@@ -272,8 +272,9 @@ def GetClientConnected(String mac) {
 	  response ->
 		if (response?.status == 200)
 		{
-                        if (logEnable) log.info response.data
-			status = true
+            if (logEnable) log.info response.data
+           
+			status = response.data
 		}
 		else
 		{
@@ -294,6 +295,41 @@ def GetClientConnected(String mac) {
         }
     }
     return status
+}
+def GetAPStatus(String mac) {
+    
+    def wxURI2 = "https://${ip_addr}:${url_port}/api/s/${unifi_site}/stat/device/${mac}"
+    
+    def requestParams2 =
+	[
+          uri:  wxURI2,
+          ignoreSSLIssues:  true,
+          headers: [ 
+                   Host: "${ip_addr}:${url_port}",
+                   
+                   Accept: "*/*",
+                   Cookie: "${settings.cookie}"
+                 ],
+	]
+ 
+    try{
+    httpGet(requestParams2)
+	{
+	  response ->
+		if (response?.status == 200)
+		{
+            if (logEnable) log.info response.data
+			return response.data
+		}
+		else
+		{
+			log.warn "${response?.status}"
+		}
+	}
+    
+    } catch (Exception e){
+        if (logEnable) log.info e
+    }
 }
 
 def GetDeviceStatus(String mac) {
