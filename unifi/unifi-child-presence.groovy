@@ -71,8 +71,17 @@ void Update(){
         state.ap_mac = status2.data[0].ap_mac
         
         apinfo = parent.GetAPStatus(status2.data[0].ap_mac)
-        sendEvent(name: "ap_name", value: apinfo.data[0].name)
-        state.ap_name = apinfo.data[0].name
+        
+        if(apinfo) { 
+            sendEvent(name: "ap_name", value: apinfo.data[0].name)
+            state.ap_name = apinfo.data[0].name 
+        } else {
+            sendEvent(name: "ap_name", value: "") 
+            state.ap_name = null 
+            status3 = false 
+        }
+        
+
     }
     
     if (status3) {
