@@ -1,9 +1,9 @@
 {
   "packageName": "UniFi",
   "author": "Mike Coffey",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "minimumHEVersion": "2.1.8.117",
-  "releaseNotes": "Updated code to catch a possible Ghosting issue with ap_name suggested by ajburgh",
+  "releaseNotes": "Updated code to test UDM Pro connectivity",
   "dateReleased": "2020-08-17",
   "drivers": [
     {
