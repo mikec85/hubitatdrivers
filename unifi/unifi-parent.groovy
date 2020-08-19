@@ -35,6 +35,7 @@ metadata {
             input "timedelaycookie", "number", title:"Number of seconds before checking if login works", description: "", required: true, displayDuringSetup: true, defaultValue: "600"
             input name: "logEnable", type: "bool", title: "Enable debug logging", defaultValue: true
             input name: "autoUpdate", type: "bool", title: "Enable Auto Testing for Valid Login", defaultValue: true
+            input name: "UDMPro", type: "bool", title: "Enable if you have a UDM Pro(testing)", defaultValue: false
         }
     }
 
@@ -204,7 +205,7 @@ def CheckIfCookieValid() {
     tempstatus = GetSelf()
     if (logEnable) log.info tempstatus
 	
-    if (tempstatus.toString().contains("data=[{name")) {
+    if (tempstatus.toString().contains("data=[{")) {
         sendEvent(name: "CookieValid", value: true)
     } else {
         sendEvent(name: "CookieValid", value: false)
@@ -516,7 +517,13 @@ def GetStatus() {
 
 def Login() {
     
-    def wxURI2 = "https://${ip_addr}:${url_port}/api/login"
+    def wxURI2 = ""
+    if(UDMPro) {
+        wxURI2 = "https://${ip_addr}:${url_port}/api/auth/login"
+    } else {
+        wxURI2 = "https://${ip_addr}:${url_port}/api/login"
+    }
+    log.info wxURI2
     payload = "{\"username\":\"${username}\",\"password\":\"${password}\",\"remember\":\"true\"}"
     
     def requestParams2 =
@@ -541,6 +548,8 @@ def Login() {
                 if (logEnable) log.info it.value.split(';')[0]
                 cookie2 = cookie2 + it.value.split(';')[0] + ";"
             }
+            //state.cookie = cookie2
+            sendEvent(name: "cookie", value: cookie2)
             
             device.updateSetting("cookie", [value: cookie2, type: "String"])
             
@@ -556,4 +565,3 @@ def Login() {
         log.info e
     }
 }
-
