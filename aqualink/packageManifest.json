@@ -3,6 +3,7 @@
   "author": "Mike Coffey",
   "version": "1.0.3",
   "minimumHEVersion": "2.1.9",
+  "communityLink": "https://community.hubitat.com/t/pool-iaqualink-driver/27585",
   "releaseNotes": "Updated to catch more errors with systems that have even fewer less Aux ports ",
   "dateReleased": "2020-06-25",
   "drivers": [
