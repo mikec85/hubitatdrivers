@@ -35,7 +35,7 @@ metadata {
             input "timedelaycookie", "number", title:"Number of seconds before checking if login works", description: "", required: true, displayDuringSetup: true, defaultValue: "600"
             input name: "logEnable", type: "bool", title: "Enable debug logging", defaultValue: true
             input name: "autoUpdate", type: "bool", title: "Enable Auto Testing for Valid Login", defaultValue: true
-            input name: "UDMPro", type: "bool", title: "Enable if you have a UDM Pro(testing)", defaultValue: false
+            input name: "UDMPro", type: "bool", title: "Enable if you have a Unifi OS product such as UDM Pro(testing)", defaultValue: false
         }
     }
 
