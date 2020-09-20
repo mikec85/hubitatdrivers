@@ -71,7 +71,8 @@ void Update(){
         
         state.hostname = status2.data[0].hostname
         state.last_seen = status2.data[0].last_seen
-        state.last_seen_readable = new Date((status2.data[0].last_seen as long)*1000)
+        tempstring = new Date((status2.data[0].last_seen as long)*1000)
+        state.last_seen_readable = "${tempstring}"
         state.essid = status2.data[0].essid
         state.network = status2.data[0].network
         state.radio_proto = status2.data[0].radio_proto
