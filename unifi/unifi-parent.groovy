@@ -21,14 +21,14 @@ metadata {
         command "GetKnownClients", null
         command "GetKnownClientsDisabled", ["_id"]
         command "GetClientID", ["MAC"]
-        
+        command "SetURL", null
         command "CheckIfCookieValid", null
     }
 
     preferences {
         section("Device Settings:") {
             input "ip_addr", "string", title:"ip address", description: "", required: true, displayDuringSetup: true
-            input "url_port", "string", title:"tcp port", description: "", required: true, displayDuringSetup: true, defaultValue: "8443"
+            input "url_port", "string", title:"tcp port, For UDM Pro change to 443", description: "", required: true, displayDuringSetup: true, defaultValue: "8443"
             input "unifi_site", "string", title:"Unifi Site, most likely the default", description: "", required: true, displayDuringSetup: true, defaultValue: "default"
             input "username", "string", title:"Username", description: "", required: true, displayDuringSetup: true, defaultValue: "admin"
             input "password", "string", title:"User Password", description: "", required: true, displayDuringSetup: true
@@ -41,10 +41,18 @@ metadata {
 
 
 }
-void DeleteChild(String device){
-    deleteChildDevice(device)
+void FromChildDeleteChild(String devicedata){
     String thisId = device.id
-    deleteChildDevice("${thisId}-${device}")
+    log.info "${thisId}-${devicedata}"
+    deleteChildDevice("${thisId}-${devicedata}")
+}
+
+void DeleteChild(String devicedata){
+    log.info devicedata
+    deleteChildDevice(devicedata)
+    String thisId = device.id
+    log.info thisId
+    deleteChildDevice("${thisId}-${devicedata}")
 }
 
 def ChildGetClientConnected(String mac_addr){
@@ -73,6 +81,7 @@ def CreateChildBlock(String MAC, String label){
 
 void initialize(){
     if (autoUpdate) runIn(timedelaycookie.toInteger(), CheckIfCookieValid)
+    SetURL()
 }
 
 void parse(String description) {
@@ -85,8 +94,8 @@ def GetClientID2(String mac) {
 }
 def GetClientID(String mac) {
     
-    def wxURI2 = "https://${ip_addr}:${url_port}/api/s/${unifi_site}/stat/sta/${mac}"
-    
+    def wxURI2 = "https://${ip_addr}:${url_port}/${settings.api_path}/s/${unifi_site}/stat/sta/${mac}"
+    cookie = device.currentValue("cookie")
     def requestParams2 =
 	[
 		uri:  wxURI2,
@@ -95,7 +104,7 @@ def GetClientID(String mac) {
                    Host: "${ip_addr}:${url_port}",
                    
                    Accept: "*/*",
-                   Cookie: "${settings.cookie}"
+                   Cookie: "${cookie}"
                  ],
 	]
  
@@ -128,8 +137,10 @@ def GetClientID(String mac) {
 
 def GetKnownClients() {
     
-    def wxURI2 = "https://${ip_addr}:${url_port}/api/s/${unifi_site}/rest/user"
-    log.info wxURI2
+    def wxURI2 = "https://${ip_addr}:${url_port}/${settings.api_path}/s/${unifi_site}/rest/user"
+    if (logEnable) log.info wxURI2
+    cookie = device.currentValue("cookie")
+    
     def requestParams2 =
 	[
 		uri:  wxURI2,
@@ -138,7 +149,7 @@ def GetKnownClients() {
                    Host: "${ip_addr}:${url_port}",
                    
                    Accept: "*/*",
-                   Cookie: "${settings.cookie}"
+                   Cookie: "${cookie}"
                  ],
 	]
  
@@ -166,8 +177,9 @@ def GetKnownClientsDisabledChild(String id) {
 }
 def GetKnownClientsDisabled(String id) {
     
-    def wxURI2 = "https://${ip_addr}:${url_port}/api/s/${unifi_site}/rest/user/${id}"
+    def wxURI2 = "https://${ip_addr}:${url_port}/${settings.api_path}/s/${unifi_site}/rest/user/${id}"
     payload = "{\"type\":[\"disabled\"]}"
+    cookie = device.currentValue("cookie")
     
     def requestParams2 =
 	[
@@ -177,7 +189,7 @@ def GetKnownClientsDisabled(String id) {
                    Host: "${ip_addr}:${url_port}",
                    
                    Accept: "*/*",
-                   Cookie: "${settings.cookie}"
+                   Cookie: "${cookie}"
                  ],
 	]
  
@@ -215,7 +227,8 @@ def CheckIfCookieValid() {
 }
 def GetSelf() {
     
-    def wxURI2 = "https://${ip_addr}:${url_port}/api/self"
+    def wxURI2 = "https://${ip_addr}:${url_port}/${settings.api_path}/self"
+    cookie = device.currentValue("cookie")
     
     def requestParams2 =
 	[
@@ -225,7 +238,7 @@ def GetSelf() {
                    Host: "${ip_addr}:${url_port}",
                    
                    Accept: "*/*",
-                   Cookie: "${settings.cookie}"
+                   Cookie: "${cookie}"
                  ]
 	]
     rdata = ""
@@ -251,8 +264,8 @@ def GetSelf() {
 }
 def GetClientConnected(String mac) {
     
-    def wxURI2 = "https://${ip_addr}:${url_port}/api/s/${unifi_site}/stat/sta/${mac}"
-    
+    def wxURI2 = "https://${ip_addr}:${url_port}/${settings.api_path}/s/${unifi_site}/stat/sta/${mac}"
+    cookie = device.currentValue("cookie")
     def requestParams2 =
 	[
 	   uri:  wxURI2,
@@ -261,7 +274,7 @@ def GetClientConnected(String mac) {
                    Host: "${ip_addr}:${url_port}",
                    
                    Accept: "*/*",
-                   Cookie: "${settings.cookie}"
+                   Cookie: "${cookie}"
                  ],
 	]
  
@@ -299,8 +312,8 @@ def GetClientConnected(String mac) {
 }
 def GetAPStatus(String mac) {
     
-    def wxURI2 = "https://${ip_addr}:${url_port}/api/s/${unifi_site}/stat/device/${mac}"
-    
+    def wxURI2 = "https://${ip_addr}:${url_port}/${settings.api_path}/s/${unifi_site}/stat/device/${mac}"
+    cookie = device.currentValue("cookie")
     def requestParams2 =
 	[
           uri:  wxURI2,
@@ -309,7 +322,7 @@ def GetAPStatus(String mac) {
                    Host: "${ip_addr}:${url_port}",
                    
                    Accept: "*/*",
-                   Cookie: "${settings.cookie}"
+                   Cookie: "${cookie}"
                  ],
 	]
  
@@ -335,8 +348,8 @@ def GetAPStatus(String mac) {
 
 def GetDeviceStatus(String mac) {
     
-    def wxURI2 = "https://${ip_addr}:${url_port}/api/s/${unifi_site}/stat/sta/${mac}"
-    
+    def wxURI2 = "https://${ip_addr}:${url_port}/${settings.api_path}/s/${unifi_site}/stat/sta/${mac}"
+    cookie = device.currentValue("cookie")
     def requestParams2 =
 	[
           uri:  wxURI2,
@@ -345,7 +358,7 @@ def GetDeviceStatus(String mac) {
                    Host: "${ip_addr}:${url_port}",
                    
                    Accept: "*/*",
-                   Cookie: "${settings.cookie}"
+                   Cookie: "${cookie}"
                  ],
 	]
  
@@ -370,9 +383,9 @@ def GetDeviceStatus(String mac) {
 }
 def unBlockDevice(String mac) {
     
-    def wxURI2 = "https://${ip_addr}:${url_port}/api/s/${unifi_site}/cmd/stamgr"
+    def wxURI2 = "https://${ip_addr}:${url_port}/${settings.api_path}/s/${unifi_site}/cmd/stamgr"
     payload = "{\"cmd\":\"unblock-sta\",\"mac\":\"${mac}\"}"
-    
+    cookie = device.currentValue("cookie")
     def requestParams2 =
 	[
 		uri:  wxURI2,
@@ -381,7 +394,7 @@ def unBlockDevice(String mac) {
                    Host: "${ip_addr}:${url_port}",
                    
                    Accept: "*/*",
-                   Cookie: "${settings.cookie}"
+                   Cookie: "${cookie}"
                  ],
         body: payload
 	]
@@ -408,9 +421,9 @@ def unBlockDevice(String mac) {
 
 def BlockDevice(String mac) {
     
-    def wxURI2 = "https://${ip_addr}:${url_port}/api/s/${unifi_site}/cmd/stamgr"
+    def wxURI2 = "https://${ip_addr}:${url_port}/${settings.api_path}/s/${unifi_site}/cmd/stamgr"
     payload = "{\"cmd\":\"block-sta\",\"mac\":\"${mac}\"}"
-    
+    cookie = device.currentValue("cookie")
     def requestParams2 =
 	[
 		uri:  wxURI2,
@@ -419,7 +432,7 @@ def BlockDevice(String mac) {
                    Host: "192.168.1.188:${url_port}",
                    
                    Accept: "*/*",
-                   Cookie: "${settings.cookie}"
+                   Cookie: "${cookie}"
                  ],
         body: payload
 	]
@@ -445,8 +458,9 @@ def BlockDevice(String mac) {
 }
 def GetDevices() {
     
-    def wxURI2 = "https://${ip_addr}:${url_port}/api/s/${unifi_site}/stat/sta"
-    
+    def wxURI2 = "https://${ip_addr}:${url_port}/${settings.api_path}/s/${unifi_site}/stat/sta"
+    //log.info device.currentValue("cookie")
+    cookie = device.currentValue("cookie")
     def requestParams2 =
 	[
 		uri:  wxURI2,
@@ -455,7 +469,7 @@ def GetDevices() {
                    Host: "${ip_addr}:${url_port}",
                    
                    Accept: "*/*",
-                   Cookie: "${settings.cookie}"
+                   Cookie: "${cookie}"
                  ]
 
 	]
@@ -481,7 +495,8 @@ def GetDevices() {
 }
 def GetStatus() {
     
-    def wxURI2 = "https://${ip_addr}:${url_port}/api/s/${unifi_site}/self"
+    def wxURI2 = "https://${ip_addr}:${url_port}/${settings.api_path}/s/${unifi_site}/self"
+    cookie = device.currentValue("cookie")
     
     def requestParams2 =
 	[
@@ -491,7 +506,7 @@ def GetStatus() {
                    Host: "${ip_addr}:${url_port}",
                    
                    Accept: "*/*",
-                   Cookie: "${settings.cookie}"
+                   Cookie: "${cookie}"
                  ]
 
 	]
@@ -514,7 +529,16 @@ def GetStatus() {
         log.info e
     }
 }
-
+def SetURL() {
+    
+    if(UDMPro) {
+        device.updateSetting("api_path", [value: "proxy/network/api", type: "String"])
+    } else {
+        device.updateSetting("api_path", [value: "api", type: "String"])
+    }
+    
+    
+}
 def Login() {
     
     def wxURI2 = ""
@@ -523,6 +547,7 @@ def Login() {
     } else {
         wxURI2 = "https://${ip_addr}:${url_port}/api/login"
     }
+    SetURL()
     log.info wxURI2
     payload = "{\"username\":\"${username}\",\"password\":\"${password}\",\"remember\":\"true\"}"
     
@@ -544,15 +569,13 @@ def Login() {
 		{
             
             cookie2=""
+            
             response.getHeaders('Set-Cookie').each {
                 if (logEnable) log.info it.value.split(';')[0]
                 cookie2 = cookie2 + it.value.split(';')[0] + ";"
             }
-            //state.cookie = cookie2
+            cookie = cookie2
             sendEvent(name: "cookie", value: cookie2)
-            
-            device.updateSetting("cookie", [value: cookie2, type: "String"])
-            
 			return response.data
 		}
 		else
@@ -564,4 +587,12 @@ def Login() {
     } catch (Exception e){
         log.info e
     }
+}
+
+def uninstalled() {
+	removeChildDevices(getChildDevices())
+}
+
+private removeChildDevices(delete) {
+	delete.each {deleteChildDevice(it.deviceNetworkId)}
 }
