@@ -4,6 +4,7 @@ metadata {
         capability "Initialize"
       
         attribute "last_seen", "string"
+        attribute "last_seen_readable", "string"
         attribute "essid", "string"
         attribute "network", "string"
         attribute "radio_proto", "string"
@@ -62,6 +63,7 @@ void Update(){
         
         sendEvent([name: "hostname", value: status2.data[0].hostname])
         sendEvent(name: "last_seen", value: status2.data[0].last_seen)
+        sendEvent(name: "last_seen_readable", value: new Date((status2.data[0].last_seen as long)*1000))
         sendEvent(name: "essid", value: status2.data[0].essid)
         sendEvent(name: "network", value: status2.data[0].network)
         sendEvent(name: "radio_proto", value: status2.data[0].radio_proto) 
@@ -69,6 +71,7 @@ void Update(){
         
         state.hostname = status2.data[0].hostname
         state.last_seen = status2.data[0].last_seen
+        state.last_seen_readable = new Date((status2.data[0].last_seen as long)*1000)
         state.essid = status2.data[0].essid
         state.network = status2.data[0].network
         state.radio_proto = status2.data[0].radio_proto
