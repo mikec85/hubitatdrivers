@@ -11,6 +11,7 @@ metadata {
         attribute "ap_name", "string"
         
         command "Update", null
+        command "DeleteThisChild", null
     }
 
     preferences {
@@ -47,6 +48,10 @@ void setmac(String MAC) {
        device.updateSetting("mac_addr", [value: "${MAC}", type: "string"])
 }
 
+void DeleteThisChild(){
+    String thisId = device.id
+    parent.FromChildDeleteChild("${mac_addr}")
+}
 void Update(){
     def status3 = false
     status2 = parent.ChildGetClientConnected(mac_addr)
