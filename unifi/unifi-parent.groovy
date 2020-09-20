@@ -575,6 +575,7 @@ def Login() {
                 cookie2 = cookie2 + it.value.split(';')[0] + ";"
             }
             cookie = cookie2
+	    state.cookie = cookie2
             sendEvent(name: "cookie", value: cookie2)
 			return response.data
 		}
