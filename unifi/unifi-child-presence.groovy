@@ -49,7 +49,6 @@ void setmac(String MAC) {
 }
 
 void DeleteThisChild(){
-    String thisId = device.id
     parent.FromChildDeleteChild("${mac_addr}")
 }
 void Update(){
