@@ -5,6 +5,7 @@ metadata {
       
         command "Update", null
         command "GetClientID", null
+        command "DeleteThisChild", null
     }
 
     preferences {
@@ -18,6 +19,10 @@ metadata {
     }
 
 
+}
+
+void DeleteThisChild(){
+    parent.FromChildDeleteChild("${mac_addr}")
 }
 
 void installed() {
