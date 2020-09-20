@@ -29,8 +29,10 @@ metadata {
         attribute "model", "string"
         attribute "type", "string"
         attribute "version", "string"
-       
+        attribute "ap_name", "string"
+        
         command "Update", null
+        command "DeleteThisChild", null
     }
 
     preferences {
@@ -43,6 +45,10 @@ metadata {
     }
 
 
+}
+
+void DeleteThisChild(){
+    parent.FromChildDeleteChild("${mac_addr}")
 }
 
 void installed() {
