@@ -27,6 +27,20 @@
       "namespace": "unifi",
       "location": "https://raw.githubusercontent.com/mikec85/hubitatdrivers/master/unifi/unifi-child-block.groovy",
       "required": false
+    },
+    {
+      "id": "4dabf731-6ce6-43f8-94fe-0a40246bff5a",
+      "name": "Unifi Child Device",
+      "namespace": "unifi",
+      "location": "https://raw.githubusercontent.com/mikec85/hubitatdrivers/master/unifi/unifi-child-device.groovy",
+      "required": false
+    },
+    {
+      "id": "389a78b8-8434-4cbb-8543-40b42652658e",
+      "name": "Unifi Child USG3",
+      "namespace": "unifi",
+      "location": "https://raw.githubusercontent.com/mikec85/hubitatdrivers/master/unifi/unifi-child-usg3.groovy",
+      "required": false
     }
   ]
 }
