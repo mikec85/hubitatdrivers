@@ -548,7 +548,7 @@ def Login() {
         wxURI2 = "https://${ip_addr}:${url_port}/api/login"
     }
     SetURL()
-    log.info wxURI2
+    if (logEnable) log.info wxURI2
     payload = "{\"username\":\"${username}\",\"password\":\"${password}\",\"remember\":\"true\"}"
     
     def requestParams2 =
