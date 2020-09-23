@@ -5,6 +5,7 @@ metadata {
         capability "PresenceSensor"
         
         attribute "cookie", "string"
+        attribute "csrf", "string"
         attribute "CookieValid", "boolean"
         
         command "GetDevices", null
@@ -93,9 +94,10 @@ def GetClientID2(String mac) {
     return GetClientID(mac)
 }
 def GetClientID(String mac) {
-    
     def wxURI2 = "https://${ip_addr}:${url_port}/${settings.api_path}/s/${unifi_site}/stat/sta/${mac}"
     cookie = device.currentValue("cookie")
+    csrf = device.currentValue("csrf")
+    log.info payload
     def requestParams2 =
 	[
 		uri:  wxURI2,
@@ -104,8 +106,9 @@ def GetClientID(String mac) {
                    Host: "${ip_addr}:${url_port}",
                    
                    Accept: "*/*",
-                   Cookie: "${cookie}"
-                 ],
+                   Cookie: "${cookie}",
+                   'X-CSRF-Token': "${csrf}"
+                 ]
 	]
  
     def status = ""
@@ -117,7 +120,7 @@ def GetClientID(String mac) {
 		if (response?.status == 200)
 		{
             if (logEnable) log.info response.data
-            if (logEnable) log.info response.data.data[0]._id
+            if (logEnable) log.info "Client ID ${response.data.data[0]._id}"
             
             sendEvent(name: "_id", value: response.data.data[0]._id)
             
@@ -127,8 +130,8 @@ def GetClientID(String mac) {
 		{
 			log.warn "${response?.status}"
 		}
+        
 	}
-    
     } catch (Exception e){
         log.info e
     }
@@ -386,6 +389,7 @@ def unBlockDevice(String mac) {
     def wxURI2 = "https://${ip_addr}:${url_port}/${settings.api_path}/s/${unifi_site}/cmd/stamgr"
     payload = "{\"cmd\":\"unblock-sta\",\"mac\":\"${mac}\"}"
     cookie = device.currentValue("cookie")
+    csrf = device.currentValue("csrf")
     def requestParams2 =
 	[
 		uri:  wxURI2,
@@ -394,7 +398,8 @@ def unBlockDevice(String mac) {
                    Host: "${ip_addr}:${url_port}",
                    
                    Accept: "*/*",
-                   Cookie: "${cookie}"
+                   Cookie: "${cookie}",
+                   'X-CSRF-Token': "${csrf}"
                  ],
         body: payload
 	]
@@ -424,15 +429,16 @@ def BlockDevice(String mac) {
     def wxURI2 = "https://${ip_addr}:${url_port}/${settings.api_path}/s/${unifi_site}/cmd/stamgr"
     payload = "{\"cmd\":\"block-sta\",\"mac\":\"${mac}\"}"
     cookie = device.currentValue("cookie")
+    csrf = device.currentValue("csrf")
     def requestParams2 =
 	[
 		uri:  wxURI2,
         ignoreSSLIssues:  true,
         headers: [ 
                    Host: "${ip_addr}:${url_port}",
-                   
                    Accept: "*/*",
-                   Cookie: "${cookie}"
+                   Cookie: "${cookie}",
+                   'X-CSRF-Token': "${csrf}"
                  ],
         body: payload
 	]
@@ -459,7 +465,6 @@ def BlockDevice(String mac) {
 def GetDevices() {
     
     def wxURI2 = "https://${ip_addr}:${url_port}/${settings.api_path}/s/${unifi_site}/stat/sta"
-    //log.info device.currentValue("cookie")
     cookie = device.currentValue("cookie")
     def requestParams2 =
 	[
@@ -548,7 +553,6 @@ def Login() {
         wxURI2 = "https://${ip_addr}:${url_port}/api/login"
     }
     SetURL()
-    if (logEnable) log.info wxURI2
     payload = "{\"username\":\"${username}\",\"password\":\"${password}\",\"remember\":\"true\"}"
     
     def requestParams2 =
@@ -569,14 +573,20 @@ def Login() {
 		{
             
             cookie2=""
-            
+            csrf=""
             response.getHeaders('Set-Cookie').each {
                 if (logEnable) log.info it.value.split(';')[0]
                 cookie2 = cookie2 + it.value.split(';')[0] + ";"
             }
+            response.getHeaders('X-CSRF-Token').each {
+                if (logEnable) log.info it.value.split(';')[0]
+                csrf = csrf + it.value.split(';')[0]
+            }
             cookie = cookie2
-	    state.cookie = cookie2
+            state.cookie = cookie
             sendEvent(name: "cookie", value: cookie2)
+            state.csrf = csrf
+            sendEvent(name: "csrf", value: csrf)
 			return response.data
 		}
 		else
