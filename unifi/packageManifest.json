@@ -1,10 +1,10 @@
 {
   "packageName": "UniFi",
   "author": "Mike Coffey",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "minimumHEVersion": "2.1.8.117",
   "communityLink": "https://community.hubitat.com/t/beta-unifi-wifi-presence/32511",
-  "releaseNotes": "Updated code to add UDM Pro capability,  Added a USG3 device driver to monitor USG settings,  Added a Device child for monitoring Unifi Devices,  Fixed Child removal",
+  "releaseNotes": "Updated code to add UDM Pro capability,  Added a USG3 device driver to monitor USG settings,  Added a Device child for monitoring Unifi Devices,  Fixed Child removal, *Fixed block unblock",
   "dateReleased": "2020-09-20",
   "drivers": [
     {
