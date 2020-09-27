@@ -75,7 +75,13 @@ void on(){
 }
 
 def GetClientID() {
-    status = parent.GetClientID2(mac_addr)   
-    sendEvent(name: "_id", value: status)
+    status = parent.GetClientID2("${mac_addr}") 
+    if(status) {
+        sendEvent(name: "_id", value: status)
+        device.updateSetting("_id", [value: "${status}", type: "string"])
+    } else {
+        sendEvent(name: "_id", value: "ID Not Found")
+    }
 }
+
 
