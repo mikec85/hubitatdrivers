@@ -316,12 +316,9 @@ def GetClientConnected(String mac) {
 
 def Child_GetAPStatus(String mac) {
     apinfo = GetAPStatus(mac)
-
     return apinfo
 }
 def GetAPStatus(String mac) {
-    
-    ///${mac}
     def wxURI2 = "https://${ip_addr}:${url_port}/${settings.api_path}/s/${unifi_site}/stat/device/${mac}"
     cookie = device.currentValue("cookie")
     def requestParams2 =
@@ -342,9 +339,7 @@ def GetAPStatus(String mac) {
 	  response ->
 		if (response?.status == 200)
 		{
-            //log.info "GetAPStatus got Response"
-            if (logEnable) log.info response.data
-            //log.info response.data
+                        if (logEnable) log.info response.data
 			return response.data
 		}
 		else
