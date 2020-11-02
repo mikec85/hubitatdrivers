@@ -313,8 +313,15 @@ def GetClientConnected(String mac) {
     }
     return status
 }
+
+def Child_GetAPStatus(String mac) {
+    apinfo = GetAPStatus(mac)
+
+    return apinfo
+}
 def GetAPStatus(String mac) {
     
+    ///${mac}
     def wxURI2 = "https://${ip_addr}:${url_port}/${settings.api_path}/s/${unifi_site}/stat/device/${mac}"
     cookie = device.currentValue("cookie")
     def requestParams2 =
@@ -335,7 +342,9 @@ def GetAPStatus(String mac) {
 	  response ->
 		if (response?.status == 200)
 		{
+            //log.info "GetAPStatus got Response"
             if (logEnable) log.info response.data
+            //log.info response.data
 			return response.data
 		}
 		else
@@ -423,7 +432,47 @@ def unBlockDevice(String mac) {
         log.info e
     }
 }
-
+def Child_RestartDevice(String mac) {
+    RestartDevice(mac) 
+}
+def RestartDevice(String mac) {
+    
+    def wxURI2 = "https://${ip_addr}:${url_port}/${settings.api_path}/s/${unifi_site}/cmd/devmgr"
+    payload = "{\"cmd\":\"restart\",\"mac\":\"${mac}\"}"
+    cookie = device.currentValue("cookie")
+    csrf = device.currentValue("csrf")
+    def requestParams2 =
+	[
+		uri:  wxURI2,
+        ignoreSSLIssues:  true,
+        headers: [ 
+                   Host: "${ip_addr}:${url_port}",
+                   Accept: "*/*",
+                   Cookie: "${cookie}",
+                   'X-CSRF-Token': "${csrf}"
+                 ],
+        body: payload
+	]
+ 
+    try{
+    httpPost(requestParams2)
+	{
+	  response ->
+		if (response?.status == 200)
+		{
+            if (logEnable) log.info response.data
+			return response.data
+		}
+		else
+		{
+			log.warn "${response?.status}"
+		}
+	}
+    
+    } catch (Exception e){
+        log.info e
+    }
+}
 def BlockDevice(String mac) {
     
     def wxURI2 = "https://${ip_addr}:${url_port}/${settings.api_path}/s/${unifi_site}/cmd/stamgr"
