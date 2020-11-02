@@ -10,13 +10,21 @@ metadata {
         attribute "ap_mac", "string"
         attribute "ap_name", "string"
         
+        attribute "model", "string"
+        attribute "type", "string"
+        attribute "version", "string"
+        attribute "state", "string"
+        attribute "uptime", "string"
+        attribute "ip", "string"
+        
         command "Update", null
+        command "Restart", null
         command "DeleteThisChild", null
     }
 
     preferences {
         section("Device Settings:") {
-            input "mac_addr", "string", title:"Mac Address of Client to Track", description: "", required: true, displayDuringSetup: true, defaultValue: ""
+            input "mac_addr", "string", title:"Mac Address of Device to Track", description: "", required: true, displayDuringSetup: true, defaultValue: ""
             input "timedelay", "number", title:"Number of seconds before rechecking", description: "", required: true, displayDuringSetup: true, defaultValue: "600"
             input name: "logEnable", type: "bool", title: "Enable debug logging", defaultValue: false
             input name: "autoUpdate", type: "bool", title: "Enable Auto updating", defaultValue: true
@@ -51,13 +59,30 @@ void initialize(){
 void setmac(String MAC) {
        device.updateSetting("mac_addr", [value: "${MAC}", type: "string"])
 }
-
 void Update(){
+    apinfo = parent.Child_GetAPStatus(mac_addr)
+
+    state.ap_name = apinfo.data.name[0]
     
-    apinfo = parent.GetAPStatus(mac_addr)
-    //log.info apinfo    
-   
+    state.model = apinfo.data.model[0]
+    state.type = apinfo.data.type[0]
+    state.version = apinfo.data.version[0]
+    state.state = apinfo.data.state[0]
+    state.uptime = apinfo.data.uptime[0]
+    state.ip = apinfo.data.ip[0]
+
+    sendEvent(name: "ap_name", value: apinfo.data.name[0])
+    sendEvent(name: "model", value: apinfo.data.model[0])
+    sendEvent(name: "type", value: apinfo.data.type[0])
+    sendEvent(name: "version", value: apinfo.data.version[0])
+    sendEvent(name: "state", value: apinfo.data.state[0])
+    sendEvent(name: "uptime", value: apinfo.data.uptime[0])
+    sendEvent(name: "ip", value: apinfo.data.ip[0])
+    
+    
     if (autoUpdate) runIn(timedelay.toInteger(), Update)
+
 }
-
-
+void Restart(){
+    apinfo = parent.RestartDevice(mac_addr)
+}
