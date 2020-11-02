@@ -1,10 +1,10 @@
 {
   "packageName": "UniFi",
   "author": "Mike Coffey",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "minimumHEVersion": "2.1.8.117",
   "communityLink": "https://community.hubitat.com/t/beta-unifi-wifi-presence/32511",
-  "releaseNotes": "Updated code to add UDM Pro capability,  Added a USG3 device driver to monitor USG settings,  Added a Device child for monitoring Unifi Devices,  Fixed Child removal, *Fixed block unblock, Block child device can now get the network device id and set it in the preferences with the GetClientID button",
+  "releaseNotes": "Updated  Device child for monitoring Unifi Devices and allows restart of devices",
   "dateReleased": "2020-09-20",
   "drivers": [
     {
