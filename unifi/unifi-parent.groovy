@@ -81,6 +81,7 @@ def CreateChildBlock(String MAC, String label){
 }
 
 void initialize(){
+    Login()
     if (autoUpdate) runIn(timedelaycookie.toInteger(), CheckIfCookieValid)
     SetURL()
 }
