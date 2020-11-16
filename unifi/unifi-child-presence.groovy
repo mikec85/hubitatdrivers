@@ -61,7 +61,7 @@ void Update(){
     } else {
         status3 = true
         
-        sendEvent([name: "hostname", value: status2.data[0].hostname])
+        sendEvent([name: "name", value: status2.data[0].name])
         sendEvent(name: "last_seen", value: status2.data[0].last_seen)
         sendEvent(name: "last_seen_readable", value: new Date((status2.data[0].last_seen as long)*1000))
         sendEvent(name: "essid", value: status2.data[0].essid)
@@ -69,7 +69,7 @@ void Update(){
         sendEvent(name: "radio_proto", value: status2.data[0].radio_proto) 
         sendEvent(name: "ap_mac", value: status2.data[0].ap_mac) 
         
-        state.hostname = status2.data[0].hostname
+        state.name = status2.data[0].name
         state.last_seen = status2.data[0].last_seen
         tempstring = new Date((status2.data[0].last_seen as long)*1000)
         state.last_seen_readable = "${tempstring}"
