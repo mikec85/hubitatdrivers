@@ -1,10 +1,10 @@
 {
   "packageName": "UniFi",
   "author": "Mike Coffey",
-  "version": "1.1.4",
+  "version": "1.1.5",
   "minimumHEVersion": "2.1.8.117",
   "communityLink": "https://community.hubitat.com/t/beta-unifi-wifi-presence/32511",
-  "releaseNotes": "Updated  Device child for monitoring Unifi Devices and allows restart of devices",
+  "releaseNotes": "Added child device for monitoring wired devices presence",
   "dateReleased": "2020-09-20",
   "drivers": [
     {
