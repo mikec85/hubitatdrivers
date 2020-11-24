@@ -292,8 +292,14 @@ def LoginGetSession(){
             device.updateSetting("session_id", [value: response.data.session_id, type: "String"])
             session_id = response.data.session_id
             settings.session_id = response.data.session_id
-            auth_token = response.data.authentication_token
+            
+	    auth_token = response.data.authentication_token
+            sendEvent(name: "auth_token", value: auth_token)
+            state.auth_token = auth_token
             user_id = response.data.id
+            sendEvent(name: "user_id", value: user_id)
+            state.user_id = user_id		
+			
 			return response.data.session_id
 		}
 		else
@@ -397,8 +403,9 @@ void GetSerial() {
 }
 
 def GetSerialfromAqualink() {
-    
-    def wxURI2 = "https://support.iaqualink.com//devices.json?api_key=EOOEMOW4YR6QNB07&authentication_token=${auth_token}&user_id=${user_id}"
+    auth_token = device.currentValue("auth_token")
+    user_id = device.currentValue("user_id")
+    def wxURI2 = "https://support.iaqualink.com/devices.json?api_key=EOOEMOW4YR6QNB07&authentication_token=${auth_token}&user_id=${user_id}"
     
     def requestParams2 =
 	[
@@ -410,6 +417,7 @@ def GetSerialfromAqualink() {
 		if (response?.status == 200)
 		{
             if (logEnable) log.info response.data
+            
             serial_number = response.data.serial_number[0]
             
             
@@ -422,8 +430,6 @@ def GetSerialfromAqualink() {
 			log.warn "${response?.status}"
 		}
 	}
-    
-  
 }
 def TogglePoolPump() {
     
