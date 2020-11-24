@@ -1,10 +1,10 @@
 {
   "packageName": "Aqualink-Driver",
   "author": "Mike Coffey",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "minimumHEVersion": "2.1.9",
   "communityLink": "https://community.hubitat.com/t/pool-iaqualink-driver/27585",
-  "releaseNotes": "Updated to catch more errors with systems that have even fewer less Aux ports ",
+  "releaseNotes": "Fixed issue with Get Serial function ",
   "dateReleased": "2020-06-25",
   "drivers": [
     {
