@@ -18,6 +18,8 @@ metadata {
         command "GetClientConnected", ["String"]
         command "CreateChildPresence", ["MAC","Label"]
         command "CreateChildBlock", ["MAC","Label"]
+	command "CreateChildMonitorDevice", ["MAC","Label"]
+        command "CreateChildPresenceWired", ["MAC","Label"]
         command "DeleteChild", ["String"]
         command "GetKnownClients", null
         command "GetKnownClientsDisabled", ["_id"]
@@ -75,6 +77,26 @@ def CreateChildBlock(String MAC, String label){
     def cd = getChildDevice("${thisId}-${MAC}")
     if (!cd) {
         cd = addChildDevice( "Unifi Child Block", "${thisId}-${MAC}", [name: "${label}", isComponent: true])
+    }
+    cd.setmac(MAC)
+    return cd 
+}
+
+def CreateChildMonitorDevice(String MAC, String label){
+    String thisId = device.id
+    def cd = getChildDevice("${thisId}-${MAC}")
+    if (!cd) {
+        cd = addChildDevice( "Unifi Child Device", "${thisId}-${MAC}", [name: "${label}", isComponent: true])
+    }
+    cd.setmac(MAC)
+    return cd 
+}
+
+def CreateChildPresenceWired(String MAC, String label){
+    String thisId = device.id
+    def cd = getChildDevice("${thisId}-${MAC}")
+    if (!cd) {
+        cd = addChildDevice( "Unifi Child Presence Wired", "${thisId}-${MAC}", [name: "${label}", isComponent: true])
     }
     cd.setmac(MAC)
     return cd 
