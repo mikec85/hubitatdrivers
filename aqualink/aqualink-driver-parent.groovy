@@ -14,7 +14,7 @@ metadata {
         attribute "subtype", "string"
         attribute "devtype", "string"
         
-        command "GetSerial", ["String"]
+        command "GetSerial", null
         command "Update", null
         command "DeleteChild", ["String"]
         command "UpdateAqualinkStatus", null
