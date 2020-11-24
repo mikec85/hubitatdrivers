@@ -1,7 +1,7 @@
 {
   "packageName": "Aqualink-Driver",
   "author": "Mike Coffey",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "minimumHEVersion": "2.1.9",
   "communityLink": "https://community.hubitat.com/t/pool-iaqualink-driver/27585",
   "releaseNotes": "Fixed issue with Get Serial function ",
