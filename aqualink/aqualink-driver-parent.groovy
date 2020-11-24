@@ -151,12 +151,12 @@ void CreateChildren(){
    
     devices = GetDevices()
     CreateChild("1", devices.devices_screen[3].aux_1[1].label, devices.devices_screen[3].aux_1[3].type )
-    try { CreateChild("2", devices.devices_screen[4].aux_2[1].label, devices.devices_screen[4].aux_2[3].type ) } catch (Exception e) { log.warn "CreateChild 2 failed: ${e.message}" }
-    try { CreateChild("3", devices.devices_screen[5].aux_3[1].label, devices.devices_screen[5].aux_3[3].type ) } catch (Exception e) { log.warn "CreateChild 3 failed: ${e.message}" }
-    try { CreateChild("4", devices.devices_screen[6].aux_4[1].label, devices.devices_screen[6].aux_4[3].type ) } catch (Exception e) { log.warn "CreateChild 4 failed: ${e.message}" }
-    try { CreateChild("5", devices.devices_screen[7].aux_5[1].label, devices.devices_screen[7].aux_5[3].type ) } catch (Exception e) { log.warn "CreateChild 5 failed: ${e.message}" }
-    try { CreateChild("6", devices.devices_screen[8].aux_6[1].label, devices.devices_screen[8].aux_6[3].type ) } catch (Exception e) { log.warn "CreateChild 6 failed: ${e.message}" }
-    try { CreateChild("7", devices.devices_screen[9].aux_7[1].label, devices.devices_screen[9].aux_7[3].type ) } catch (Exception e) { log.warn "CreateChild 7 failed: ${e.message}" }
+    try { CreateChild("2", devices.devices_screen[4].aux_2[1].label, devices.devices_screen[4].aux_2[3].type ) } catch (Exception e) { if (logEnable) log.warn "CreateChild 2 failed: ${e.message}" }
+    try { CreateChild("3", devices.devices_screen[5].aux_3[1].label, devices.devices_screen[5].aux_3[3].type ) } catch (Exception e) { if (logEnable) log.warn "CreateChild 3 failed: ${e.message}" }
+    try { CreateChild("4", devices.devices_screen[6].aux_4[1].label, devices.devices_screen[6].aux_4[3].type ) } catch (Exception e) { if (logEnable) log.warn "CreateChild 4 failed: ${e.message}" }
+    try { CreateChild("5", devices.devices_screen[7].aux_5[1].label, devices.devices_screen[7].aux_5[3].type ) } catch (Exception e) { if (logEnable) log.warn "CreateChild 5 failed: ${e.message}" }
+    try { CreateChild("6", devices.devices_screen[8].aux_6[1].label, devices.devices_screen[8].aux_6[3].type ) } catch (Exception e) { if (logEnable) log.warn "CreateChild 6 failed: ${e.message}" }
+    try { CreateChild("7", devices.devices_screen[9].aux_7[1].label, devices.devices_screen[9].aux_7[3].type ) } catch (Exception e) { if (logEnable) log.warn "CreateChild 7 failed: ${e.message}" }
     if (aux_EA) { CreateChild("8", devices.devices_screen[10].aux_EA[1].label, devices.devices_screen[10].aux_EA[3].type ) } 
     CreateChild("FilterPump", "FilterPump", "0")
     
@@ -224,14 +224,14 @@ void parsechild(String status2, String label, String devtype, String subtype) {
 void updatedeviceinfo(){
     devices = GetDevices()
    
-    try {  notifychild("1",devices.devices_screen[3].aux_1[0].state, devices.devices_screen[3].aux_1[1].label, devices.devices_screen[3].aux_1[3].type, devices.devices_screen[3].aux_1[4].subtype )  } catch (Exception e) { log.warn "aux_1 failed: ${e.message}" }
-    try {  notifychild("2",devices.devices_screen[4].aux_2[0].state, devices.devices_screen[4].aux_2[1].label, devices.devices_screen[4].aux_2[3].type, devices.devices_screen[4].aux_2[4].subtype )  } catch (Exception e) { log.warn "aux_2 failed: ${e.message}" }
-    try {  notifychild("3",devices.devices_screen[5].aux_3[0].state, devices.devices_screen[5].aux_3[1].label, devices.devices_screen[5].aux_3[3].type, devices.devices_screen[5].aux_3[4].subtype )  } catch (Exception e) { log.warn "aux_3 failed: ${e.message}" }
-    try {  notifychild("4",devices.devices_screen[6].aux_4[0].state, devices.devices_screen[6].aux_4[1].label, devices.devices_screen[6].aux_4[3].type, devices.devices_screen[6].aux_4[4].subtype )  } catch (Exception e) { log.warn "aux_4 failed: ${e.message}" }
-    try {  notifychild("5",devices.devices_screen[7].aux_5[0].state, devices.devices_screen[7].aux_5[1].label, devices.devices_screen[7].aux_5[3].type, devices.devices_screen[7].aux_5[4].subtype )  } catch (Exception e) { log.warn "aux_5 failed: ${e.message}" }
-    try {  notifychild("6",devices.devices_screen[8].aux_6[0].state, devices.devices_screen[8].aux_6[1].label, devices.devices_screen[8].aux_6[3].type, devices.devices_screen[8].aux_6[4].subtype )  } catch (Exception e) { log.warn "aux_6 failed: ${e.message}" }
-    try {  notifychild("7",devices.devices_screen[9].aux_7[0].state, devices.devices_screen[9].aux_7[1].label, devices.devices_screen[9].aux_7[3].type, devices.devices_screen[9].aux_7[4].subtype )  } catch (Exception e) { log.warn "aux_7 failed: ${e.message}" }
-    if (aux_EA) { try {  notifychild("8",devices.devices_screen[10].aux_EA[0].state, devices.devices_screen[10].aux_EA[1].label, devices.devices_screen[10].aux_EA[3].type, devices.devices_screen[10].aux_EA[4].subtype )  } catch (Exception e) { log.warn "aux_EA failed: ${e.message}" } }
+    try {  notifychild("1",devices.devices_screen[3].aux_1[0].state, devices.devices_screen[3].aux_1[1].label, devices.devices_screen[3].aux_1[3].type, devices.devices_screen[3].aux_1[4].subtype )  } catch (Exception e) { if (logEnable) log.warn "aux_1 failed: ${e.message}" }
+    try {  notifychild("2",devices.devices_screen[4].aux_2[0].state, devices.devices_screen[4].aux_2[1].label, devices.devices_screen[4].aux_2[3].type, devices.devices_screen[4].aux_2[4].subtype )  } catch (Exception e) { if (logEnable) log.warn "aux_2 failed: ${e.message}" }
+    try {  notifychild("3",devices.devices_screen[5].aux_3[0].state, devices.devices_screen[5].aux_3[1].label, devices.devices_screen[5].aux_3[3].type, devices.devices_screen[5].aux_3[4].subtype )  } catch (Exception e) { if (logEnable) log.warn "aux_3 failed: ${e.message}" }
+    try {  notifychild("4",devices.devices_screen[6].aux_4[0].state, devices.devices_screen[6].aux_4[1].label, devices.devices_screen[6].aux_4[3].type, devices.devices_screen[6].aux_4[4].subtype )  } catch (Exception e) { if (logEnable) log.warn "aux_4 failed: ${e.message}" }
+    try {  notifychild("5",devices.devices_screen[7].aux_5[0].state, devices.devices_screen[7].aux_5[1].label, devices.devices_screen[7].aux_5[3].type, devices.devices_screen[7].aux_5[4].subtype )  } catch (Exception e) { if (logEnable) log.warn "aux_5 failed: ${e.message}" }
+    try {  notifychild("6",devices.devices_screen[8].aux_6[0].state, devices.devices_screen[8].aux_6[1].label, devices.devices_screen[8].aux_6[3].type, devices.devices_screen[8].aux_6[4].subtype )  } catch (Exception e) { if (logEnable) log.warn "aux_6 failed: ${e.message}" }
+    try {  notifychild("7",devices.devices_screen[9].aux_7[0].state, devices.devices_screen[9].aux_7[1].label, devices.devices_screen[9].aux_7[3].type, devices.devices_screen[9].aux_7[4].subtype )  } catch (Exception e) { if (logEnable) log.warn "aux_7 failed: ${e.message}" }
+    if (aux_EA) { try {  notifychild("8",devices.devices_screen[10].aux_EA[0].state, devices.devices_screen[10].aux_EA[1].label, devices.devices_screen[10].aux_EA[3].type, devices.devices_screen[10].aux_EA[4].subtype )  } catch (Exception e) { if (logEnable) log.warn "aux_EA failed: ${e.message}" } }
     
     
     devices = GetHomeScreenInfo()
