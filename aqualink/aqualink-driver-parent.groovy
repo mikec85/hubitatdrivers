@@ -588,7 +588,7 @@ def GetHomeScreenInfo() {
 def GetDevices() {
     
     def wxURI2 = "https://iaqualink-api.realtime.io/v1/mobile/session.json?actionID=command&command=get_devices&serial=${serial_number}&sessionID=${session_id}"
-    
+    if (logEnable) log.info wxURI2
     def requestParams2 =
 	[
 		uri:  wxURI2,
