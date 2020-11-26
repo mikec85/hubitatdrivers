@@ -254,7 +254,7 @@ void updatedeviceinfo(){
       try {  notifychild("Air_Temp",devices.home_screen[6].air_temp, "Air Temp", "0", "0" )  } catch (Exception e) { log.warn "Air temp failed: ${e.message}" }
     } 
     if(SpaPump){
-      try {  notifychild("Spa_Pump",devices.home_screen[12].spa_pump, "SpaPump", "SpaPump", "0" )  } catch (Exception e) { log.warn "Spa Pump failed: ${e.message}" }
+      try {  notifychild("Spa_Pump",devices.home_screen[11].spa_pump, "SpaPump", "SpaPump", "0" )  } catch (Exception e) { log.warn "Spa Pump failed: ${e.message}" }
     }  
     
     if(SpaHeater){
