@@ -1,10 +1,10 @@
 {
   "packageName": "Aqualink-Driver",
   "author": "Mike Coffey",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "minimumHEVersion": "2.1.9",
   "communityLink": "https://community.hubitat.com/t/pool-iaqualink-driver/27585",
-  "releaseNotes": "Fixed issue with Get Serial function ",
+  "releaseNotes": "Fixed issue with spa_pump index",
   "dateReleased": "2020-06-25",
   "drivers": [
     {
