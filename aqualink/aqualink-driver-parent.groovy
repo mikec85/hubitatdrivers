@@ -17,7 +17,6 @@ metadata {
         command "GetSerial", null
         command "Update", null
         command "DeleteChild", ["String"]
-        //command "UpdateAqualinkStatus", null
         command "TogglePoolPump", null
         
         command "SetHeater", [[name: "Pool or SPA", type:"ENUM", constraints:["spa","pool"]],
