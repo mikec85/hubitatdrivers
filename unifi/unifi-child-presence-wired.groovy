@@ -61,6 +61,7 @@ void Update(){
         status3 = true
         
         sendEvent([name: "name", value: status2.data[0].name])
+        sendEvent([name: "ip", value: status2.data[0].ip])
         sendEvent(name: "last_seen", value: status2.data[0].last_seen)
         sendEvent(name: "last_seen_readable", value: new Date((status2.data[0].last_seen as long)*1000))
         sendEvent(name: "sw_mac", value: status2.data[0].sw_mac) 
@@ -68,6 +69,7 @@ void Update(){
         sendEvent(name: "sw_depth", value: status2.data[0].sw_depth) 
         
         state.name = status2.data[0].name
+        state.ip = status2.data[0].ip
         state.last_seen = status2.data[0].last_seen
         tempstring = new Date((status2.data[0].last_seen as long)*1000)
         state.last_seen_readable = "${tempstring}"
