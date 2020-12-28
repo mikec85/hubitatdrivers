@@ -81,9 +81,11 @@ void Update(){
     
     try{
         state.uplink_mac = apinfo.data.last_uplink[0].uplink_mac
-        sendEvent(name: "uplink_mac", value: apinfo.last_uplink[0].uplink_mac)
+        sendEvent(name: "uplink_mac", value: apinfo.data.last_uplink[0].uplink_mac)
+        
         state.uplink_remote_port = apinfo.data.last_uplink[0].uplink_remote_port
-        sendEvent(name: "uplink_remote_port", value: apinfo.last_uplink[0].uplink_remote_port)
+        sendEvent(name: "uplink_remote_port", value: apinfo.data.last_uplink[0].uplink_remote_port)
+        
     } catch (Exception e){
         log.info e
     }
