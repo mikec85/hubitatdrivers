@@ -43,7 +43,7 @@
       "required": false
     },
     {
-      "id": "c1253c46-f94a-40ca-a22e-e9a5d2b3d02c",
+      "id": "3f4dbd71-03f6-4be5-a372-52053d9bb341",
       "name": "Unifi Child Presence Wired",
       "namespace": "unifi",
       "location": "https://raw.githubusercontent.com/mikec85/hubitatdrivers/master/unifi/unifi-child-presence-wired.groovy",
