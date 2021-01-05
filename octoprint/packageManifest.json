@@ -1,0 +1,16 @@
+{
+  "packageName": "OctoPrint",
+  "author": "Mike Coffey",
+  "version": "1.0",
+  "minimumHEVersion": "2.1.9",
+  "dateReleased": "2020-04-07",
+  "drivers": [
+    {
+      "id": "f3183e3a-57b0-4d7e-8daf-a7ca33a46585",
+      "name": "OctoPrint",
+      "namespace": "OctoPrint",
+      "location": "https://github.com/mikec85/hubitatdrivers/raw/master/octoprint/OctoPrint.groovy",
+      "required": true
+    }
+  ]
+}
