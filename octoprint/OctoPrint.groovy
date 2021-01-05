@@ -7,6 +7,11 @@ metadata {
         attribute "state", "enum", ["Operational", "Printing", "Pausing","Paused", "Cancelling", "Error", "Offline"]
         attribute "completion", "string"
         attribute "printTimeLeft", "string"
+        attribute "printTime", "string"
+        attribute "estimatedPrintTime", "string"
+        attribute "name", "string"
+        attribute "user", "string"
+        
         
         command "GetJob", null
         command "Print", null
@@ -68,19 +73,53 @@ def GetJob() {
 		if (response?.status == 200)
 		{
 
-		if (response.data.progress.completion != null)
+   		    sendEvent(name: "state", value: response.data.state)
+            state.state = response.data.state
+            
+			if (response.data.progress.completion != null)
             	{
+                    state.completion = response.data.progress.completion
                 	sendEvent(name: "completion", value: response.data.progress.completion)
             	} else {
                     sendEvent(name: "completion", value: 0 )
                 }
             if (response.data.progress.printTimeLeft != null)
             	{
+                    state.printTimeLeft = response.data.progress.printTimeLeft/60
             		sendEvent(name: "printTimeLeft", value: response.data.progress.printTimeLeft/60 )
                 } else {
                     sendEvent(name: "printTimeLeft", value: 0 )
                 }
- 		    sendEvent(name: "state", value: response.data.state)
+            if (response.data.progress.printTime != null)
+            	{
+                    state.printTime = response.data.progress.printTime/60
+            		sendEvent(name: "printTime", value: response.data.progress.printTime/60 )
+                } else {
+                    sendEvent(name: "printTime", value: 0 )
+                }
+            
+            if (response.data.job.estimatedPrintTime != null)
+            	{
+                    state.estimatedPrintTime = response.data.job.estimatedPrintTime/60
+            		sendEvent(name: "estimatedPrintTime", value: response.data.job.estimatedPrintTime/60 )
+                } else {
+                    sendEvent(name: "estimatedPrintTime", value: 0 )
+                }
+            
+            if (response.data.job.file.name != null)
+            	{
+                    state.name = response.data.job.file.name
+            		sendEvent(name: "name", value: response.data.job.file.name )
+                } else {
+                    sendEvent(name: "name", value: "null" )
+                }
+            if (response.data.job.user != null)
+            	{
+                    state.user = response.data.job.user
+            		sendEvent(name: "user", value: response.data.job.user )
+                } else {
+                    sendEvent(name: "user", value: "null" )
+                }
             
             if (logEnable) log.info response.data
 			toReturn = response.data.toString() 
