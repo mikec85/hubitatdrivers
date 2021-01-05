@@ -14,6 +14,12 @@
       "category": "Integrations",
       "location": "https://raw.githubusercontent.com/mikec85/hubitatdrivers/master/unifi/packageManifest.json",
       "description": "UniFi Integration with Hubitat for tracking precense and blocking network devices"
+    },
+    {
+      "name": "OctoPrint",
+      "category": "Integrations",
+      "location": "https://github.com/mikec85/hubitatdrivers/raw/master/octoprint/packageManifest.json",
+      "description": "OctoPrint 3d Printing Integration"
     }
   ]
 }
