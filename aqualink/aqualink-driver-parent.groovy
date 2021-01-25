@@ -122,6 +122,14 @@ def CreateChildHeater(String Unit, String label){
     }
     return cd 
 }
+def CreateChildOneTouch(String Unit, String label){
+    String thisId = device.id
+    def cd = getChildDevice("${thisId}-${Unit}")
+    if (!cd) {
+        cd = addChildDevice( "Pool Aqualink Child OneTouch", "${thisId}-${Unit}", [name: "${label}", isComponent: true])
+    }
+    return cd 
+}
 
 void updatecolor(){
     device.updateSetting("colorlightenable", [value: true, type: "bool"])
@@ -177,6 +185,18 @@ void CreateChildren(){
     }
     if(SolarHeater){
         CreateChildHeater("Solar_Heater", "Solar Heater" )
+    }
+    if(OneTouch){
+        log.info "create onetouch"
+        onetouch = GetOneTouch()
+        log.info onetouch.onetouch_screen.onetouch_1[2][2].label
+        CreateChildOneTouch("OneTouch_1", onetouch.onetouch_screen.onetouch_1[2][2].label )
+        CreateChildOneTouch("OneTouch_2", onetouch.onetouch_screen.onetouch_2[3][2].label )
+        CreateChildOneTouch("OneTouch_3", onetouch.onetouch_screen.onetouch_3[4][2].label )
+        CreateChildOneTouch("OneTouch_4", onetouch.onetouch_screen.onetouch_4[5][2].label )
+        CreateChildOneTouch("OneTouch_5", onetouch.onetouch_screen.onetouch_5[6][2].label )
+        CreateChildOneTouch("OneTouch_6", onetouch.onetouch_screen.onetouch_6[7][2].label )
+
     }
 }
 
@@ -265,7 +285,16 @@ void updatedeviceinfo(){
     if(SolarHeater){
       try {  notifychild("Solar_Heater",devices.home_screen[15].solar_heater, "Solar_Heater", "Solar_Heater", "0" )  } catch (Exception e) { log.warn "Solar_Heater failed: ${e.message}" }
     }  
-    
+    if(OneTouch){
+      onetouch = GetOneTouch()
+      try {  notifychild("OneTouch_1",onetouch.onetouch_screen.onetouch_1[2][1].state, onetouch.onetouch_screen.onetouch_1[2][2].label, "OneTouch", "0" )  } catch (Exception e) { log.warn "OneTouch failed: ${e.message}" }
+      try {  notifychild("OneTouch_2",onetouch.onetouch_screen.onetouch_2[3][1].state, onetouch.onetouch_screen.onetouch_2[3][2].label, "OneTouch", "0" )  } catch (Exception e) { log.warn "OneTouch failed: ${e.message}" }
+      try {  notifychild("OneTouch_3",onetouch.onetouch_screen.onetouch_3[4][1].state, onetouch.onetouch_screen.onetouch_3[4][2].label, "OneTouch", "0" )  } catch (Exception e) { log.warn "OneTouch failed: ${e.message}" }
+      try {  notifychild("OneTouch_4",onetouch.onetouch_screen.onetouch_4[5][1].state, onetouch.onetouch_screen.onetouch_4[5][2].label, "OneTouch", "0" )  } catch (Exception e) { log.warn "OneTouch failed: ${e.message}" }
+      try {  notifychild("OneTouch_5",onetouch.onetouch_screen.onetouch_5[6][1].state, onetouch.onetouch_screen.onetouch_5[6][2].label, "OneTouch", "0" )  } catch (Exception e) { log.warn "OneTouch failed: ${e.message}" }
+      try {  notifychild("OneTouch_6",onetouch.onetouch_screen.onetouch_6[7][1].state, onetouch.onetouch_screen.onetouch_6[7][2].label, "OneTouch", "0" )  } catch (Exception e) { log.warn "OneTouch failed: ${e.message}" }
+
+    }
 }
 
 def LoginGetSession(){
@@ -573,6 +602,59 @@ def GetHomeScreenInfo() {
 		if (response?.status == 200)
 		{
             if (logEnable) log.info response.data
+			return response.data
+		}
+		else
+		{
+			log.warn "${response?.status}"
+		}
+	}
+    
+    
+}
+
+def SetOneTouch(String button) {
+
+    def wxURI2 = "https://iaqualink-api.realtime.io/v1/mobile/session.json?actionID=command&command=set_onetouch_${button}&serial=${serial_number}&sessionID=${session_id}"
+    if (logEnable) log.info wxURI2
+    def requestParams2 =
+	[
+		uri:  wxURI2,
+	]
+    httpGet(requestParams2)
+	{
+	  response ->
+		if (response?.status == 200)
+		{
+            if (logEnable) log.info response.data
+            log.info response.data
+			return response.data
+		}
+		else
+		{
+			log.warn "${response?.status}"
+		}
+	}
+    
+    
+}
+
+def GetOneTouch() {
+
+    def wxURI2 = "https://iaqualink-api.realtime.io/v1/mobile/session.json?actionID=command&command=get_onetouch&serial=${serial_number}&sessionID=${session_id}"
+    if (logEnable) log.info wxURI2
+    def requestParams2 =
+	[
+		uri:  wxURI2,
+	]
+    httpGet(requestParams2)
+	{
+	  response ->
+		if (response?.status == 200)
+		{
+            if (logEnable) log.info response.data
+            log.info response.data
+            //log.info response.data.onetouch_screen.onetouch_1[2][1].state
 			return response.data
 		}
 		else
