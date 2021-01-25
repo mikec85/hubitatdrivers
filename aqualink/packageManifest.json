@@ -34,6 +34,13 @@
       "namespace": "aqualink",
       "location": "https://raw.githubusercontent.com/mikec85/hubitatdrivers/master/aqualink/aqualink-driver-child-heater.groovy",
       "required": false
+    },
+    {
+      "id": "64a8b79d-13e5-4b57-8a1f-31ab9e37e4e8",
+      "name": "Pool Aqualink Child OneTouch",
+      "namespace": "aqualink",
+      "location": "https://raw.githubusercontent.com/mikec85/hubitatdrivers/master/aqualink/aqualink-driver-child-onetouch.groovy",
+      "required": false
     }
   ]
 }
