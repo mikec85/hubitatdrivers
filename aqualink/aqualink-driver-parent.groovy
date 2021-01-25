@@ -18,7 +18,9 @@ metadata {
         command "Update", null
         command "DeleteChild", ["String"]
         command "TogglePoolPump", null
-        
+        command "GetOneTouch", null
+        command "SetOneTouch", ["String"]
+	    
         command "SetHeater", [[name: "Pool or SPA", type:"ENUM", constraints:["spa","pool"]],
                               [name: "Temperature", type:"STRING", description: "Enter the Temperature"]]
         
@@ -38,6 +40,7 @@ metadata {
             input name: "SpaHeater", type: "bool", title: "Enable Spa Heater", defaultValue: false
             input name: "PoolHeater", type: "bool", title: "Enable Pool Heater", defaultValue: false
             input name: "SolarHeater", type: "bool", title: "Enable Solar Heater", defaultValue: false
+	    input name: "OneTouch", type: "bool", title: "Enable OneTouch", defaultValue: false
         }
     }
 
@@ -85,7 +88,13 @@ void uninstalled() {
     deleteChildDevice("${thisId}-Spa_Temp")
     deleteChildDevice("${thisId}-Air_Temp")
     deleteChildDevice("${thisId}-Spa_Pump")
-    
+    deleteChildDevice("${thisId}-OneTouch_1")
+    deleteChildDevice("${thisId}-OneTouch_2")
+    deleteChildDevice("${thisId}-OneTouch_3")
+    deleteChildDevice("${thisId}-OneTouch_4")
+    deleteChildDevice("${thisId}-OneTouch_5")
+    deleteChildDevice("${thisId}-OneTouch_6")
+	
 }
 
 void initialize() {
