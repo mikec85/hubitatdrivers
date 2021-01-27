@@ -9,6 +9,7 @@ metadata {
         attribute "subtype", "string"
         attribute "devtype", "string"
         
+        command "ChangeLightColor", ["String"]
         command "Update", null
     }
 
@@ -42,7 +43,10 @@ void Update(){
     parent.Updateinfo()
 }
 
-
+void ChangeLightColor(String color){
+    unit=device.deviceNetworkId.substring(device.deviceNetworkId.indexOf("-")+1)
+    parent.OperateColorLightParent(unit,color)
+}
 
 void updatecolor(){
     device.updateSetting("colorlightenable", [value: true, type: "bool"])
