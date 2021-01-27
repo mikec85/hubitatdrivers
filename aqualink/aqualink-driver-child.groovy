@@ -1,15 +1,17 @@
 metadata {
     definition (name: "Pool Aqualink Child", namespace: "aqualink", author: "MC", importUrl: "https://raw.githubusercontent.com/mikec85/hubitatdrivers/master/aqualink/aqualink-driver-child.groovy") {
         capability "Switch"
-        
+
         attribute "contact", "string"
-        
+
         attribute "label", "string"
         attribute "status", "string"
         attribute "subtype", "string"
         attribute "devtype", "string"
-        
+        attribute "color", "string"
+
         command "Update", null
+        command "SetLightColor", ["string"]
     }
 
     preferences {
@@ -32,38 +34,42 @@ def logsOff() {
 }
 
 void parse(String description) {
-    
+
 
 }
-
-
 
 void Update(){
     parent.Updateinfo()
 }
 
-
+def SetLightColor(String setcolor = "1"){
+  off()
+  device.updateSetting ("lightcolor", [value: setcolor, type: "string"])
+  sendEvent (name: "color", value: setcolor)
+  runIn (5, 'on')
+  log.info "set device color to: ${settings.lightcolor}"
+}
 
 void updatecolor(){
     device.updateSetting("colorlightenable", [value: true, type: "bool"])
-    device.updateSetting("devtype", [value: "2", type: "String"])
+    device.updateSetting("devtype", [value: "2", type: "string"])
 }
 void updatedevtype(String devtype){
-    device.updateSetting("devtype", [value: devtype, type: "String"])
+    device.updateSetting("devtype", [value: devtype, type: "string"])
 }
 
 void parsechild(String status2, String label, String devtype, String subtype) {
     device.name = label
     status= status2
     if(status == "1") {
-        sendEvent(name: "switch", value: "on")        
+        sendEvent(name: "switch", value: "on")
     } else {
         sendEvent(name: "switch", value: "off")
     }
     device.updateSetting("devtype", devtype)
     sendEvent(name:"devtype", value:devtype)
     state.devtype = devtype
-   
+
 
 }
 
@@ -75,11 +81,11 @@ void on(){
     //log.info "  ${device.currentValue('switch')} "
     //log.info "  ${device.currentValue('subtype')}"
     devtype = device.currentValue('devtype')
-    
+
     if(device.currentValue('switch') == 'off'){
         if (logEnable) log.info "Toggle Device ON  ${device}"
         if(unit == "FilterPump"){
-            parent.TogglePoolPump()  
+            parent.TogglePoolPump()
         } else if(unit == "Spa_Pump"){
             parent.ToggleSpaPump()
         } else if(devtype == "2"){
@@ -87,11 +93,11 @@ void on(){
         } else {
             parent.OperateDeviceParent(unit)
         }
-        sendEvent(name: "switch", value: "on")        
+        sendEvent(name: "switch", value: "on")
     } else {
         if (logEnable) log.info "Device Already ON  ${device}"
     }
-      
+
 }
 
 void off(){
@@ -100,11 +106,11 @@ void off(){
     parent.rundeviceupdate()
     log.info "${unit}    ${device.currentValue('switch')} "
     devtype = device.currentValue('devtype')
-    
+
     if(device.currentValue('switch') == 'on'){
         if (logEnable) log.info "Toggle Device OFF  ${device}"
         if(unit == "FilterPump"){
-            parent.TogglePoolPump()  
+            parent.TogglePoolPump()
         } else if(unit == "Spa_Pump"){
             parent.ToggleSpaPump()
         } else if(devtype == "2"){
@@ -112,9 +118,9 @@ void off(){
         } else {
             parent.OperateDeviceParent(unit)
         }
-        sendEvent(name: "switch", value: "off")        
+        sendEvent(name: "switch", value: "off")
     } else {
         if (logEnable) log.info "Device Already OFF  ${device}"
     }
-        
+
 }
