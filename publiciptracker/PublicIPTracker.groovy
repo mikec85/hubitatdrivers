@@ -16,8 +16,18 @@ metadata {
 
 }
 
+void debugOff() {
+   log.warn("Disabling debug logging")
+   device.updateSetting("logdebugs", [value:"false", type:"bool"])
+}
+
 void initialize(){
     if (autoUpdate) runIn(timedelay.toInteger(), Update)
+	
+    if (logdebugs) {
+	log.debug "Debug logging will be disabled in 600 seconds"
+	runIn(600, debugOff)
+    }
     
 }
 
