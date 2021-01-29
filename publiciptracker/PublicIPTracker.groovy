@@ -1,5 +1,5 @@
 metadata {
-	definition (name: "PublicIPTracker", namespace: "PublicIPTracker", author: "MC", importUrl: "") {
+	definition (name: "PublicIPTracker", namespace: "PublicIPTracker", author: "MC", importUrl: "https://raw.githubusercontent.com/mikec85/hubitatdrivers/master/publiciptracker/PublicIPTracker.groovy") {
 		capability "Initialize"
 		
 		
