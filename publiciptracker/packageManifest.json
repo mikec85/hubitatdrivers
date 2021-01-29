@@ -1,0 +1,16 @@
+{
+  "packageName": "PublicIPTracker",
+  "author": "Mike Coffey",
+  "version": "1.0",
+  "minimumHEVersion": "2.1.9",
+  "dateReleased": "2021-01-27",
+  "drivers": [
+    {
+      "id": "5e4fdce8-8355-4a3e-96bb-dc771c1b760f",
+      "name": "PublicIPTracker",
+      "namespace": "PublicIPTracker",
+      "location": "https://github.com/mikec85/hubitatdrivers/raw/master/publiciptracker/PublicIPTracker.groovy",
+      "required": true
+    }
+  ]
+}
