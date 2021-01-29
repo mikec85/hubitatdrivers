@@ -7,26 +7,30 @@
       "name": "Aqualink-Driver",
       "category": "Integrations",
       "location": "https://raw.githubusercontent.com/mikec85/hubitatdrivers/master/aqualink/packageManifest.json",
-      "description": "Aqualink Integration for Controlling your Pool Equipment"
+      "description": "Aqualink Integration for Controlling your Pool Equipment",
+      "tags": [ "Tools & Utilities", "Monitoring", "Notifications" ]
     },
     {
       "name": "UniFi-Driver",
       "category": "Integrations",
       "location": "https://raw.githubusercontent.com/mikec85/hubitatdrivers/master/unifi/packageManifest.json",
-      "description": "UniFi Integration with Hubitat for tracking precense and blocking network devices"
+      "description": "UniFi Integration with Hubitat for tracking precense and blocking network devices",
+      "tags": [ "LAN", "Tools & Utilities", "Monitoring", "Notifications" ]
     },
     {
       "name": "OctoPrint",
       "category": "Integrations",
       "location": "https://github.com/mikec85/hubitatdrivers/raw/master/octoprint/packageManifest.json",
-      "description": "OctoPrint 3d Printing Integration"
+      "description": "OctoPrint 3d Printing Integration",
+      "tags": [ "Tools & Utilities", "Monitoring", "Notifications" ]
     },
     {
       "id": "e959885e-e371-4b1e-ae05-4044b8fe5868",
       "name": "PublicIPTracker",
       "category": "Utility",
       "location": "https://github.com/mikec85/hubitatdrivers/raw/master/publiciptracker/packageManifest.json",
-      "description": "Tracks your public ip address"
+      "description": "Tracks your public ip address",
+      "tags": [ "LAN", "Tools & Utilities", "Monitoring" ]
     }
   ]
 }
