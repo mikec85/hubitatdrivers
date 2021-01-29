@@ -20,6 +20,13 @@
       "category": "Integrations",
       "location": "https://github.com/mikec85/hubitatdrivers/raw/master/octoprint/packageManifest.json",
       "description": "OctoPrint 3d Printing Integration"
+    },
+    {
+      "id": "e959885e-e371-4b1e-ae05-4044b8fe5868",
+      "name": "PublicIPTracker",
+      "category": "Utility",
+      "location": "https://github.com/mikec85/hubitatdrivers/raw/master/publiciptracker/packageManifest.json",
+      "description": "Tracks your public ip address"
     }
   ]
 }
