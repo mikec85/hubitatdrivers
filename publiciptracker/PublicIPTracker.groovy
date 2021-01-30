@@ -115,6 +115,8 @@ def Update() {
            }
           }
       }
+	
+      if (autoUpdate) runIn(timedelay.toInteger(), Update)
 }
 
 def GetIFConfig() {
