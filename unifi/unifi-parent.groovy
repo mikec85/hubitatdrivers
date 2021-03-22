@@ -6,7 +6,7 @@ metadata {
         
         attribute "cookie", "string"
         attribute "csrf", "string"
-        attribute "CookieValid", "boolean"
+        attribute "CookieValid", "string"
         
         command "GetDevices", null
         command "GetStatus", null
