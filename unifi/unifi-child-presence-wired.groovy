@@ -54,8 +54,9 @@ void DeleteThisChild(){
 void Update(){
     def status3 = false
     status2 = parent.ChildGetClientConnected(mac_addr)
+    if (logEnable) log.info status2
     
-    if(status2.equals("")) {
+    if(status2.equals("") || status2 == null) {
         status3 = false
     } else {
         status3 = true
