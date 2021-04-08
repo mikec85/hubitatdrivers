@@ -4,7 +4,7 @@ metadata {
         capability "Switch"
         capability "PresenceSensor"
         
-        attribute "state", "enum", ["Operational", "Printing", "Pausing","Paused", "Cancelling", "Error", "Offline"]
+        attribute "state", "enum", ["Operational", "Printing", "Pausing","Paused", "Cancelling", "Error", "Offline", "Disconnected"]
         attribute "completion", "string"
         attribute "printTimeLeft", "string"
         attribute "printTime", "string"
@@ -98,81 +98,79 @@ def GetPrinter() {
                  ],
 	]
     try{
-    httpGet(requestParams2)
-	{
-	  response ->
-		if (response?.status == 200)
+		httpGet(requestParams2)
 		{
+		  response ->
+			if (response?.status == 200)
+			{
 
-   		    sendEvent(name: "state", value: response.data.state)
-            state.state = response.data.state
-			if(state.state != null && ["Printing", "Pausing","Paused", "Cancelling"].contains(state.state)){
-				state.isPrinting = true
-			} else {
-				state.isPrinting = false
+				sendEvent(name: "state", value: response.data.state)
+				state.state = response.data.state
+				if(state.state != null && ["Printing", "Pausing","Paused", "Cancelling"].contains(state.state)){
+					state.isPrinting = true
+				} else {
+					state.isPrinting = false
+				}
+				
+				if (state.isPrinting && response.data.progress.completion != null)
+					{
+						//state.completion = response.data.progress.completion
+						sendEvent(name: "completion", value: response.data.progress.completion)
+					} else {
+						sendEvent(name: "completion", value: 0 )
+					}
+				if (state.isPrinting && response.data.progress.printTimeLeft != null)
+					{
+						//state.printTimeLeft = response.data.progress.printTimeLeft/60
+						sendEvent(name: "printTimeLeft", value: response.data.progress.printTimeLeft/60 )
+					} else {
+						sendEvent(name: "printTimeLeft", value: 0 )
+					}
+				if (state.isPrinting && response.data.progress.printTime != null)
+					{
+						//state.printTime = response.data.progress.printTime/60
+						sendEvent(name: "printTime", value: response.data.progress.printTime/60 )
+					} else {
+						sendEvent(name: "printTime", value: 0 )
+					}
+				
+				if (state.isPrinting && response.data.job.estimatedPrintTime != null)
+					{
+						//state.estimatedPrintTime = response.data.job.estimatedPrintTime/60
+						sendEvent(name: "estimatedPrintTime", value: response.data.job.estimatedPrintTime/60 )
+					} else {
+						sendEvent(name: "estimatedPrintTime", value: 0 )
+					}
+				
+				if (state.isPrinting && response.data.job.file.name != null)
+					{
+						//state.name = response.data.job.file.name
+						sendEvent(name: "name", value: response.data.job.file.name )
+					} else {
+						sendEvent(name: "name", value: "none" )
+					}
+				if (response.data.job.user != null)
+					{
+						//state.user = response.data.job.user
+						sendEvent(name: "user", value: response.data.job.user )
+					} else {
+						sendEvent(name: "user", value: "none" )
+					}
+				
+				if (logEnable) log.info response.data
+				toReturn = response.data.toString()
+
+
+				// check printer temperatures after successful return of printer job details
+				GetPrinterTemp()
 			}
-			
-			if (state.isPrinting && response.data.progress.completion != null)
-            	{
-                    //state.completion = response.data.progress.completion
-                	sendEvent(name: "completion", value: response.data.progress.completion)
-            	} else {
-                    sendEvent(name: "completion", value: 0 )
-                }
-            if (state.isPrinting && response.data.progress.printTimeLeft != null)
-            	{
-                    //state.printTimeLeft = response.data.progress.printTimeLeft/60
-            		sendEvent(name: "printTimeLeft", value: response.data.progress.printTimeLeft/60 )
-                } else {
-                    sendEvent(name: "printTimeLeft", value: 0 )
-                }
-            if (state.isPrinting && response.data.progress.printTime != null)
-            	{
-                    //state.printTime = response.data.progress.printTime/60
-            		sendEvent(name: "printTime", value: response.data.progress.printTime/60 )
-                } else {
-                    sendEvent(name: "printTime", value: 0 )
-                }
-            
-            if (state.isPrinting && response.data.job.estimatedPrintTime != null)
-            	{
-                    //state.estimatedPrintTime = response.data.job.estimatedPrintTime/60
-            		sendEvent(name: "estimatedPrintTime", value: response.data.job.estimatedPrintTime/60 )
-                } else {
-                    sendEvent(name: "estimatedPrintTime", value: 0 )
-                }
-            
-            if (state.isPrinting && response.data.job.file.name != null)
-            	{
-                    //state.name = response.data.job.file.name
-            		sendEvent(name: "name", value: response.data.job.file.name )
-                } else {
-                    sendEvent(name: "name", value: "null" )
-                }
-            if (response.data.job.user != null)
-            	{
-                    //state.user = response.data.job.user
-            		sendEvent(name: "user", value: response.data.job.user )
-                } else {
-                    sendEvent(name: "user", value: "null" )
-                }
-            
-            if (logEnable) log.info response.data
-			toReturn = response.data.toString()
-
-
-			// check printer temperatures after successful return of printer job details
-			GetPrinterTemp()
+			else
+			{
+				log.warn "${response?.status}"
+				// set default status for values
+				PrinterNotResponding()
+			}
 		}
-		else
-		{
-			log.warn "${response?.status}"
-			
-			// set default status for values
-			PrinterNotResponding()
-		}
-	}
-    
     } catch (Exception e){
         log.info e
         toReturn = e.toString()
@@ -180,8 +178,11 @@ def GetPrinter() {
 		PrinterNotResponding()
     }
 
+
+	// run fast check if state.isPrinting == true or if tool0-actual > 50  (extruder 1 is over 50C)
 	unschedule(CheckPrinter)
-	if(state.isPrinting){
+	def currentToolTemp = device.currentValue("tool0-actual")?.toInteger() ?: 0
+	if(state.isPrinting || currentToolTemp > 50){
 		if (autoUpdate) runIn(delayCheckPrinting.toInteger(), CheckPrinter)
 	} else {
 		if (autoUpdate) runIn(delayCheckIdle.toInteger(), CheckPrinter)
@@ -197,8 +198,8 @@ def PrinterNotResponding(){
 	sendEvent(name: "printTimeLeft", value: 0 )
 	sendEvent(name: "printTime", value: 0 )
 	sendEvent(name: "estimatedPrintTime", value: 0 )
-	sendEvent(name: "name", value: "null" )
-	sendEvent(name: "user", value: "null" )
+	sendEvent(name: "name", value: "none" )
+	sendEvent(name: "user", value: "none" )
 }
 
 def GetPrinterTemp(){
