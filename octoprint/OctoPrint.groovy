@@ -11,9 +11,27 @@ metadata {
         attribute "estimatedPrintTime", "string"
         attribute "name", "string"
         attribute "user", "string"
+		attribute "lastPrinterCheck", "String"
+        
+		
+		// attributes for temperature
+		attribute "bed-actual", "number"
+		attribute "bed-offset", "number"
+		attribute "bed-target", "number"
+		// primary extruder
+		attribute "tool0-actual", "number"
+		attribute "tool0-offset", "number"
+		attribute "tool0-target", "number"	
+		// additional extruders (if available on printer)
+		attribute "tool1-actual", "number"
+		attribute "tool1-offset", "number"
+		attribute "tool1-target", "number"	
+		attribute "tool2-actual", "number"
+		attribute "tool2-offset", "number"
+		attribute "tool2-target", "number"			
         
         
-        command "GetJob", null
+        command "GetPrinter", null
         command "Print", null
         command "Restart", null
         command "Cancel", null
@@ -28,28 +46,41 @@ metadata {
             input "url_port", "string", title:"tcp port", description: "", required: true, displayDuringSetup: true, defaultValue: "80"
             input "api_key", "string", title:"API Key", description: "", required: true, displayDuringSetup: true, defaultValue: ""
             
-            input "timedelay", "number", title:"Number of seconds before checking Job Status", description: "", required: true, displayDuringSetup: true, defaultValue: "600"
+            input "delayCheckIdle", "number", title:"Number of seconds between checking printer while idle", description: "", required: true, displayDuringSetup: true, defaultValue: "600"
+            input "delayCheckPrinting", "number", title:"Number of seconds between checking printer while printing", description: "", required: true, displayDuringSetup: true, defaultValue: "60"
             input name: "logEnable", type: "bool", title: "Enable debug logging", defaultValue: true
-            input name: "autoUpdate", type: "bool", title: "Enable Auto Updating of Job Status", defaultValue: true
+            input name: "autoUpdate", type: "bool", title: "Enable Auto Updating of Printer Status", defaultValue: true
         }
     }
 
 
 }        
 void parse(String toparse){
-    if (logEnable) log.info toparse
+    if (logEnable) log.info "Parsing: ${toparse}"
 }
+
 void initialize(){
-    if (autoUpdate) runIn(timedelay.toInteger(), CheckJob)
+	state.isPrinting = false
+	unschedule()
+    if (autoUpdate) runIn(1, CheckPrinter)
 }
 
-def CheckJob() {
-    GetJob()
-
-    if (autoUpdate) runIn(timedelay.toInteger(), CheckJob)
+def updated(){
+	state.isPrinting = false
+	unschedule()
+    if (autoUpdate) runIn(5, CheckPrinter)
 }
 
-def GetJob() {
+def CheckPrinter() {
+	unschedule(CheckPrinter)
+	GetPrinter()
+}
+
+def GetPrinter() {
+	
+	def nowDay = new Date().format("MMM dd", location.timeZone)
+	def nowTime = new Date().format("h:mm:ss a", location.timeZone)
+	sendEvent(name: "lastPrinterCheck", value: nowDay + " at " + nowTime, displayed: false)	
     
     def wxURI2 = "http://${ip_addr}:${url_port}/api/job"
     def toReturn = " "
@@ -75,67 +106,148 @@ def GetJob() {
 
    		    sendEvent(name: "state", value: response.data.state)
             state.state = response.data.state
-            
-			if (response.data.progress.completion != null)
+			if(state.state != null && ["Printing", "Pausing","Paused", "Cancelling"].contains(state.state)){
+				state.isPrinting = true
+			} else {
+				state.isPrinting = false
+			}
+			
+			if (state.isPrinting && response.data.progress.completion != null)
             	{
-                    state.completion = response.data.progress.completion
+                    //state.completion = response.data.progress.completion
                 	sendEvent(name: "completion", value: response.data.progress.completion)
             	} else {
                     sendEvent(name: "completion", value: 0 )
                 }
-            if (response.data.progress.printTimeLeft != null)
+            if (state.isPrinting && response.data.progress.printTimeLeft != null)
             	{
-                    state.printTimeLeft = response.data.progress.printTimeLeft/60
+                    //state.printTimeLeft = response.data.progress.printTimeLeft/60
             		sendEvent(name: "printTimeLeft", value: response.data.progress.printTimeLeft/60 )
                 } else {
                     sendEvent(name: "printTimeLeft", value: 0 )
                 }
-            if (response.data.progress.printTime != null)
+            if (state.isPrinting && response.data.progress.printTime != null)
             	{
-                    state.printTime = response.data.progress.printTime/60
+                    //state.printTime = response.data.progress.printTime/60
             		sendEvent(name: "printTime", value: response.data.progress.printTime/60 )
                 } else {
                     sendEvent(name: "printTime", value: 0 )
                 }
             
-            if (response.data.job.estimatedPrintTime != null)
+            if (state.isPrinting && response.data.job.estimatedPrintTime != null)
             	{
-                    state.estimatedPrintTime = response.data.job.estimatedPrintTime/60
+                    //state.estimatedPrintTime = response.data.job.estimatedPrintTime/60
             		sendEvent(name: "estimatedPrintTime", value: response.data.job.estimatedPrintTime/60 )
                 } else {
                     sendEvent(name: "estimatedPrintTime", value: 0 )
                 }
             
-            if (response.data.job.file.name != null)
+            if (state.isPrinting && response.data.job.file.name != null)
             	{
-                    state.name = response.data.job.file.name
+                    //state.name = response.data.job.file.name
             		sendEvent(name: "name", value: response.data.job.file.name )
                 } else {
                     sendEvent(name: "name", value: "null" )
                 }
             if (response.data.job.user != null)
             	{
-                    state.user = response.data.job.user
+                    //state.user = response.data.job.user
             		sendEvent(name: "user", value: response.data.job.user )
                 } else {
                     sendEvent(name: "user", value: "null" )
                 }
             
             if (logEnable) log.info response.data
-			toReturn = response.data.toString() 
+			toReturn = response.data.toString()
+
+
+			// check printer temperatures after successful return of printer job details
+			GetPrinterTemp()
 		}
 		else
 		{
 			log.warn "${response?.status}"
+			
+			// set default status for values
+			PrinterNotResponding()
 		}
 	}
     
     } catch (Exception e){
         log.info e
         toReturn = e.toString()
+		// set default status for values
+		PrinterNotResponding()
     }
-    
+
+	unschedule(CheckPrinter)
+	if(state.isPrinting){
+		if (autoUpdate) runIn(delayCheckPrinting.toInteger(), CheckPrinter)
+	} else {
+		if (autoUpdate) runIn(delayCheckIdle.toInteger(), CheckPrinter)
+	}
     return toReturn
+}
+
+def PrinterNotResponding(){
+	sendEvent(name: "state", value: "Disconnected")
+	state.state = "Disconnected"
+	state.isPrinting = false
+	sendEvent(name: "completion", value: 0 )
+	sendEvent(name: "printTimeLeft", value: 0 )
+	sendEvent(name: "printTime", value: 0 )
+	sendEvent(name: "estimatedPrintTime", value: 0 )
+	sendEvent(name: "name", value: "null" )
+	sendEvent(name: "user", value: "null" )
+}
+
+def GetPrinterTemp(){
+    if (logEnable) log.debug "GetPrinterTemp"
+    def wxURI2 = "http://${ip_addr}:${url_port}/api/printer"
+    def toReturn = " "
+        
+    def requestParams2 =
+	[
+		uri:  wxURI2,
+        headers: [ 
+                   "User-Agent": "Wget/1.20.1",
+                   Accept: "*/*",
+                   "Accept-Encoding": "identity",
+                   Host: "${ip_addr}",
+                   Connection: "Keep-Alive",
+                   "X-Api-Key": "${api_key}",
+                 ],
+	]
+    asynchttpGet('GetPrinterTempReturn', requestParams2)
+}
+
+def GetPrinterTempReturn(response, data) {
+	if (logEnable) log.debug "GetPrinterTempReturn"
+	//log.debug response.getJson().temperature
+	def R = response.getJson()
+	def value = ""
+	def event
+	
+	// just processing temperature values
+	if(R.temperature != null){
+		R.temperature.each{ t ->
+			//log.debug t
+			if(t != null){
+				//log.debug t.getValue()
+				t.getValue().each { i ->
+					//log.debug "${t.getKey()}-${i}"
+					value = "${t.getKey()}-${i}"
+					
+					event = value.split("=")
+					
+					//log.debug event[0]
+					//log.debug event[1]
+					
+					sendEvent(name: event[0], value: event[1] )
+				}
+			}
+		}
+	}
 }
 
 def Print(){
