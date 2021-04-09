@@ -1,10 +1,11 @@
 metadata {
     definition (name: "OctoPrint", namespace: "OctoPrint", author: "MC", importUrl: "https://raw.githubusercontent.com/mikec85/hubitatdrivers/master/octoprint/OctoPrint.groovy") {
-        capability "Initialize"
-        capability "Switch"
+        capability "Actuator"
+		capability "Initialize"
+        //capability "Switch"
         capability "PresenceSensor"
         
-        attribute "state", "enum", ["Operational", "Printing", "Pausing","Paused", "Cancelling", "Error", "Offline", "Disconnected"]
+        attribute "state", "enum", ["Operational", "Printing", "Pausing", "Paused", "Cancelling", "Error", "Offline", "Disconnected"]
         attribute "completion", "string"
         attribute "printTimeLeft", "string"
         attribute "printTime", "string"
@@ -21,17 +22,17 @@ metadata {
 		// primary extruder
 		attribute "tool0-actual", "number"
 		attribute "tool0-offset", "number"
-		attribute "tool0-target", "number"	
+		attribute "tool0-target", "number"
 		// additional extruders (if available on printer)
 		attribute "tool1-actual", "number"
 		attribute "tool1-offset", "number"
-		attribute "tool1-target", "number"	
+		attribute "tool1-target", "number"
 		attribute "tool2-actual", "number"
 		attribute "tool2-offset", "number"
-		attribute "tool2-target", "number"			
+		attribute "tool2-target", "number"
         
         
-        command "GetPrinter", null
+        command "CheckPrinter", null
         command "Print", null
         command "Restart", null
         command "Cancel", null
@@ -47,7 +48,7 @@ metadata {
             input "api_key", "string", title:"API Key", description: "", required: true, displayDuringSetup: true, defaultValue: ""
             
             input "delayCheckIdle", "number", title:"Number of seconds between checking printer while idle", description: "", required: true, displayDuringSetup: true, defaultValue: "600"
-            input "delayCheckPrinting", "number", title:"Number of seconds between checking printer while printing", description: "", required: true, displayDuringSetup: true, defaultValue: "60"
+            input "delayCheckPrinting", "number", title:"Number of seconds between checking printer while printing", description: "After a print, this short delay will be used to refresh the printer data until the Primary Extruder (tool0) is less than 50C", required: true, displayDuringSetup: true, defaultValue: "60"
             input name: "logEnable", type: "bool", title: "Enable debug logging", defaultValue: true
             input name: "autoUpdate", type: "bool", title: "Enable Auto Updating of Printer Status", defaultValue: true
         }
@@ -103,7 +104,7 @@ def GetPrinter() {
 		  response ->
 			if (response?.status == 200)
 			{
-
+				sendEvent(name: "presence", value: "present")
 				sendEvent(name: "state", value: response.data.state)
 				state.state = response.data.state
 				if(state.state != null && ["Printing", "Pausing","Paused", "Cancelling"].contains(state.state)){
@@ -191,6 +192,7 @@ def GetPrinter() {
 }
 
 def PrinterNotResponding(){
+	sendEvent(name: "presence", value: "not present")
 	sendEvent(name: "state", value: "Disconnected")
 	state.state = "Disconnected"
 	state.isPrinting = false
