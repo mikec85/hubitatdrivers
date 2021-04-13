@@ -104,9 +104,11 @@ def GetPrinter() {
 		  response ->
 			if (response?.status == 200)
 			{
-				sendEvent(name: "presence", value: "present")
-				sendEvent(name: "state", value: response.data.state)
-				state.state = response.data.state
+				if(state.state == null || state.state != response.data.state){
+					sendEvent(name: "presence", value: "present")
+					sendEvent(name: "state", value: response.data.state)
+					state.state = response.data.state
+				}
 				if(state.state != null && ["Printing", "Pausing","Paused", "Cancelling"].contains(state.state)){
 					state.isPrinting = true
 				} else {
