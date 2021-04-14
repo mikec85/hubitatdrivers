@@ -119,7 +119,6 @@ def GetPrinter() {
 					sendEvent(name: "state", value: stateName)
 					state.state = stateName
 				}
-				log.debug msg
 				if (msg != "" && msg != null && msg.charAt(msg.length() - 1) == ')') {
 					msg = msg.substring(0, msg.length() - 1);
 				} else {
