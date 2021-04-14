@@ -6,6 +6,7 @@ metadata {
         capability "PresenceSensor"
         
         attribute "state", "enum", ["Operational", "Printing", "Pausing", "Paused", "Cancelling", "Error", "Offline", "Disconnected"]
+        attribute "stateMessage", "string"
         attribute "completion", "string"
         attribute "printTimeLeft", "string"
         attribute "printTime", "string"
@@ -104,16 +105,42 @@ def GetPrinter() {
 		  response ->
 			if (response?.status == 200)
 			{
-				if(state.state == null || state.state != response.data.state){
-					sendEvent(name: "presence", value: "present")
-					sendEvent(name: "state", value: response.data.state)
-					state.state = response.data.state
+				def stateName,msg
+				if(response.data.state){
+					if(response.data.state.contains(" (")){
+						def rSplit = response.data.state.split(' \\(', 2)
+						stateName = rSplit[0]
+						msg = rSplit[1]
+					} else {
+						stateName = response.data.state
+					}
 				}
-				if(state.state != null && ["Printing", "Pausing","Paused", "Cancelling"].contains(state.state)){
+				if(state.state == null || state.state != stateName){
+					sendEvent(name: "state", value: stateName)
+					state.state = stateName
+				}
+				log.debug msg
+				if (msg != "" && msg != null && msg.charAt(msg.length() - 1) == ')') {
+					msg = msg.substring(0, msg.length() - 1);
+				} else {
+					msg = "none"
+				}
+				if(device.currentValue("stateMessage") != msg){
+					sendEvent(name: "stateMessage", value: msg)
+				}
+				if(state.state != null && ["Printing", "Pausing", "Paused", "Cancelling"].contains(state.state)){
 					state.isPrinting = true
 				} else {
 					state.isPrinting = false
 				}
+				
+				if(state.state != null && ["Offline", "Disconnected"].contains(state.state)){
+					state.printerConnected = false
+					sendEvent(name: "presence", value: "not present")
+				} else {
+					state.printerConnected = true
+					sendEvent(name: "presence", value: "present")
+				}				
 				
 				if (state.isPrinting && response.data.progress.completion != null)
 					{
@@ -165,11 +192,14 @@ def GetPrinter() {
 
 
 				// check printer temperatures after successful return of printer job details
-				GetPrinterTemp()
+				if(state.printerConnected){
+					GetPrinterTemp()
+				}
 			}
 			else
 			{
 				log.warn "${response?.status}"
+				sendEvent(name: "stateMessage", value: "${response?.status}")
 				// set default status for values
 				PrinterNotResponding()
 			}
@@ -177,6 +207,7 @@ def GetPrinter() {
     } catch (Exception e){
         log.info e
         toReturn = e.toString()
+		sendEvent(name: "stateMessage", value: toReturn)
 		// set default status for values
 		PrinterNotResponding()
     }
@@ -195,7 +226,9 @@ def GetPrinter() {
 
 def PrinterNotResponding(){
 	sendEvent(name: "presence", value: "not present")
+	state.printerConnected = false
 	sendEvent(name: "state", value: "Disconnected")
+	//sendEvent(name: "stateMessage", value: "none")
 	state.state = "Disconnected"
 	state.isPrinting = false
 	sendEvent(name: "completion", value: 0 )
