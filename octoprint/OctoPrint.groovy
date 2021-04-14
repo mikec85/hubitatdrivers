@@ -202,11 +202,16 @@ def GetPrinter() {
 				// set default status for values
 				PrinterNotResponding()
 			}
+			// set octoprintConnected to true if receive any response
+			state.octoprintConnected = true
 		}
     } catch (Exception e){
         log.info e
         toReturn = e.toString()
 		sendEvent(name: "stateMessage", value: toReturn)
+		
+		// set octoprintConnected to false if no response received
+		state.octoprintConnected = false
 		// set default status for values
 		PrinterNotResponding()
     }
