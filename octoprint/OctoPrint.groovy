@@ -194,6 +194,8 @@ def GetPrinter() {
 				// check printer temperatures after successful return of printer job details
 				if(state.printerConnected){
 					GetPrinterTemp()
+				} else {
+					ResetTemperatures()
 				}
 			}
 			else
@@ -242,6 +244,28 @@ def PrinterNotResponding(){
 	sendEvent(name: "estimatedPrintTime", value: 0 )
 	sendEvent(name: "name", value: "none" )
 	sendEvent(name: "user", value: "none" )
+	// reset temperature readings to 0 when disconnected
+	ResetTemperatures()
+}
+
+def ResetTemperatures(){
+	sendEvent(name: "bed-actual", value: 0 )
+	sendEvent(name: "bed-offset", value: 0 )
+	sendEvent(name: "bed-target", value: 0 )
+	sendEvent(name: "tool0-actual", value: 0 )
+	sendEvent(name: "tool0-offset", value: 0 )
+	sendEvent(name: "tool0-target", value: 0 )
+
+	if(device.currentValue("tool1-actual") != null){
+		sendEvent(name: "tool1-actual", value: 0 )
+		sendEvent(name: "tool1-offset", value: 0 )
+		sendEvent(name: "tool1-target", value: 0 )
+	}
+	if(device.currentValue("tool2-actual") != null){
+		sendEvent(name: "tool2-actual", value: 0 )
+		sendEvent(name: "tool2-offset", value: 0 )
+		sendEvent(name: "tool2-target", value: 0 )
+	}		
 }
 
 def GetPrinterTemp(){
