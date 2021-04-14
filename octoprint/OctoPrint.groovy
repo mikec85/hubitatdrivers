@@ -40,6 +40,7 @@ metadata {
         command "Pause", null
         command "Resume", null
         command "PauseToggle", null
+        command "ConnectToPrinter", null
     }
 
     preferences {
@@ -293,25 +294,32 @@ def GetPrinterTempReturn(response, data) {
 }
 
 def Print(){
-    SendCommand("{ \"command\": \"start\" }")
-} 
+    SendCommand("{ \"command\": \"start\" }","/api/job")
+}
 def Cancel(){
-    SendCommand("{ \"command\": \"cancel\" }")
-} 
+    SendCommand("{ \"command\": \"cancel\" }","/api/job")
+}
 def Restart(){
-    SendCommand("{ \"command\": \"restart\" }")
-} 
+    SendCommand("{ \"command\": \"restart\" }","/api/job")
+}
 def Pause(){
-    SendCommand('{"command":"pause","action":"pause"}')
-} 
+    SendCommand('{"command":"pause","action":"pause"}',"/api/job")
+}
 def Resume(){
-    SendCommand('{"command":"pause","action":"resume"}')
-} 
+    SendCommand('{"command":"pause","action":"resume"}',"/api/job")
+}
 def PauseToggle(){
-    SendCommand('{"command":"pause","action":"toggle"}')
+    SendCommand('{"command":"pause","action":"toggle"}',"/api/job")
+}
+def ConnectToPrinter(){
+	if(state.printerConnected == false){
+		SendCommand("{ \"command\": \"connect\" }","/api/connection")
+	} else {
+		log.debug "Attempting ConnectToPrinter, but state.printerConnected == true"
+	}
 }
 
-def SendCommand(String payload) {
+def SendCommand(String payload, String path) {
     def headers = [:] 
     headers.put("HOST", "${ip_addr}:${url_port}")
     headers.put("Content-Type", "application/json")
@@ -320,7 +328,7 @@ def SendCommand(String payload) {
     try {
         def hubAction = new hubitat.device.HubAction(
             method: "POST",
-            path: "/api/job",
+            path: path,
             body: payload,
             headers: headers
             )
@@ -329,5 +337,5 @@ def SendCommand(String payload) {
     }
     catch (Exception e) {
         log.debug "runCmd hit exception ${e} on ${hubAction}"
-    }  
+    }
 }
