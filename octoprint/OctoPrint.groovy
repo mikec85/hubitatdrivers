@@ -69,9 +69,18 @@ void initialize(){
 }
 
 def updated(){
+	if (logEnable) {
+		log.warn "debug logging enabled..."
+		runIn(1800,logsOff)
+	}	
 	state.isPrinting = false
 	unschedule()
     if (autoUpdate) runIn(5, CheckPrinter)
+}
+
+def logsOff(){
+    log.warn "debug logging disabled..."
+    device.updateSetting("logEnable",[value:"false",type:"bool"])
 }
 
 def CheckPrinter() {
