@@ -16,6 +16,7 @@ metadata {
         attribute "state", "string"
         attribute "uptime", "string"
         attribute "ip", "string"
+        attribute "devicecount", "string"
         
         command "Update", null
         command "Restart", null
@@ -28,6 +29,7 @@ metadata {
             input "timedelay", "number", title:"Number of seconds before rechecking", description: "", required: true, displayDuringSetup: true, defaultValue: "600"
             input name: "logEnable", type: "bool", title: "Enable debug logging", defaultValue: false
             input name: "autoUpdate", type: "bool", title: "Enable Auto updating", defaultValue: true
+            input name: "GetDeviceCount", type: "bool", title: "Enable Getting Connected Device Count", defaultValue: false
         }
     }
 
@@ -89,7 +91,7 @@ void Update(){
     } catch (Exception e){
         log.info e
     }
-                  
+    if(GetDeviceCount){              
     try{
         count = parent.Child_GetAPStatus2(mac_addr)
         state.devicecount = count
@@ -98,7 +100,7 @@ void Update(){
     } catch (Exception e){
         log.info e
     }
-
+    }
     if (autoUpdate) runIn(timedelay.toInteger(), Update)
 
 }
