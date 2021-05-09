@@ -84,12 +84,21 @@ void Update(){
         sendEvent(name: "uplink_mac", value: apinfo.data.last_uplink[0].uplink_mac)
         
         state.uplink_remote_port = apinfo.data.last_uplink[0].uplink_remote_port
-        sendEvent(name: "uplink_remote_port", value: apinfo.data.last_uplink[0].uplink_remote_port)
+        sendEvent(name: "uplink_remote_port", value: apinfo.data.last_uplink[0].uplink_remote_port
         
     } catch (Exception e){
         log.info e
     }
-    
+                  
+    try{
+        count = parent.Child_GetAPStatus2(mac_addr)
+        state.devicecount = count
+        sendEvent(name: "devicecount", value: count)
+        
+    } catch (Exception e){
+        log.info e
+    }
+
     if (autoUpdate) runIn(timedelay.toInteger(), Update)
 
 }
