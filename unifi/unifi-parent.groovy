@@ -375,7 +375,66 @@ def GetAPStatus(String mac) {
         if (logEnable) log.info e
     }
 }
+def Child_GetAPStatus2(String ap_mac) {
+    apinfo = GetAPStatus2(ap_mac)
+    return apinfo
+}
+def GetAPStatus2(String ap_mac) {
+    count = 0
+    
+    def wxURI2 = "https://${ip_addr}:${url_port}/${settings.api_path}/s/${unifi_site}/stat/sta"
+    cookie = device.currentValue("cookie")
+    def requestParams2 =
+	[
+          uri:  wxURI2,
+          ignoreSSLIssues:  true,
+          headers: [ 
+                   Host: "${ip_addr}:${url_port}",
+                   
+                   Accept: "*/*",
+                   Cookie: "${cookie}"
+                 ],
+	]
+ 
+    try{
+    httpGet(requestParams2)
+	{
+	  response ->
+		if (response?.status == 200)
+		{
+            log.info response.data.data[0]
+            
+            try{
 
+        
+                for(int lcv; lcv < response.data.data.size() ; lcv++ ) {
+            
+                    //log.info "${response.data.data[lcv].mac}   ${response.data.data[lcv].ap_mac}   ${response.data.data[lcv].hostname}"
+                    
+                    if( response.data.data[lcv].ap_mac == ap_mac ) {
+                       count++   
+                    }
+            
+                }
+
+                log.info "the count ${count}"
+        
+            } catch (Exception e){
+                log.info e
+            }
+            
+			return count
+		}
+		else
+		{
+			log.warn "${response?.status}"
+		}
+	}
+    
+    } catch (Exception e){
+        log.info e
+    }
+}
 def GetDeviceStatus(String mac) {
     
     def wxURI2 = "https://${ip_addr}:${url_port}/${settings.api_path}/s/${unifi_site}/stat/sta/${mac}"
