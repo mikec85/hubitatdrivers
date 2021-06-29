@@ -7,6 +7,7 @@ metadata {
         attribute "session_id", "string"
         attribute "auth_token", "string"
         attribute "user_id", "string"
+	attribute "api_url", "string"    
          
         attribute "label", "string"
         attribute "status", "string"
@@ -98,6 +99,7 @@ void uninstalled() {
 }
 
 void initialize() {
+    device.updateSetting("api_url", "https://p-api.iaqualink.net/v1/mobile/session.json")
     
     LoginGetSession()
     CreateChildren()
@@ -308,7 +310,8 @@ void updatedeviceinfo(){
 
 def LoginGetSession(){
     
-    def wxURI = "https://support.iaqualink.com/users/sign_in.json"
+    //def wxURI = "https://support.iaqualink.com/users/sign_in.json"
+    def wxURI = "https://prod.zodiac-io.com/users/v1/login"
     
 	def requestParams =
 	[
@@ -407,7 +410,7 @@ void OperateDeviceParent(String num){
     OperateDevice(num)
 }
 void OperateDevice(String num){
-    def wxURI2 = "https://iaqualink-api.realtime.io/v1/mobile/session.json?actionID=command&command=set_aux_${num}&serial=${serial_number}&sessionID=${session_id}"
+    def wxURI2 = "${api_url}?actionID=command&command=set_aux_${num}&serial=${serial_number}&sessionID=${session_id}"
     if (logEnable) log.info wxURI2
     def requestParams2 =
 	[
@@ -442,7 +445,8 @@ void GetSerial() {
 def GetSerialfromAqualink() {
     auth_token = device.currentValue("auth_token")
     user_id = device.currentValue("user_id")
-    def wxURI2 = "https://support.iaqualink.com/devices.json?api_key=EOOEMOW4YR6QNB07&authentication_token=${auth_token}&user_id=${user_id}"
+    //def wxURI2 = "https://support.iaqualink.com/devices.json?api_key=EOOEMOW4YR6QNB07&authentication_token=${auth_token}&user_id=${user_id}"
+    def wxURI2 = "https://r-api.iaqualink.net/devices.json?api_key=EOOEMOW4YR6QNB07&authentication_token=${auth_token}&user_id=${user_id}"
     
     def requestParams2 =
 	[
@@ -479,7 +483,7 @@ def TogglePoolPump() {
 }
 def OperatePoolPump() {
     
-    def wxURI2 = "https://iaqualink-api.realtime.io/v1/mobile/session.json?actionID=command&command=set_pool_pump&serial=${serial_number}&sessionID=${session_id}"
+    def wxURI2 = "${api_url}?actionID=command&command=set_pool_pump&serial=${serial_number}&sessionID=${session_id}"
     
     def requestParams2 =
 	[
@@ -512,7 +516,7 @@ def ToggleSpaPump() {
 }
 def OperateSpaPump() {
     
-    def wxURI2 = "https://iaqualink-api.realtime.io/v1/mobile/session.json?actionID=command&command=set_spa_pump&serial=${serial_number}&sessionID=${session_id}"
+    def wxURI2 = "${api_url}?actionID=command&command=set_spa_pump&serial=${serial_number}&sessionID=${session_id}"
     
     def requestParams2 =
 	[
@@ -544,7 +548,7 @@ def SetHeater(String type, String temp) {
         type2="temp2"
     }
     
-    def wxURI2 = "https://iaqualink-api.realtime.io/v1/mobile/session.json?actionID=command&command=set_temps&serial=${serial_number}&sessionID=${session_id}&${type2}=${temp}"
+    def wxURI2 = "${api_url}?actionID=command&command=set_temps&serial=${serial_number}&sessionID=${session_id}&${type2}=${temp}"
     
     def requestParams2 =
 	[
@@ -575,7 +579,7 @@ def ToggleHeater(String type) {
         type2="set_pool_heater"
     }
     
-    def wxURI2 = "https://iaqualink-api.realtime.io/v1/mobile/session.json?actionID=command&command=${type2}&serial=${serial_number}&sessionID=${session_id}"
+    def wxURI2 = "${api_url}?actionID=command&command=${type2}&serial=${serial_number}&sessionID=${session_id}"
     
     def requestParams2 =
 	[
@@ -599,7 +603,7 @@ def ToggleHeater(String type) {
 }
 def GetHomeScreenInfo() {
     
-    def wxURI2 = "https://iaqualink-api.realtime.io/v1/mobile/session.json?actionID=command&command=get_home&serial=${serial_number}&sessionID=${session_id}"
+    def wxURI2 = "${api_url}?actionID=command&command=get_home&serial=${serial_number}&sessionID=${session_id}"
     
     def requestParams2 =
 	[
@@ -624,7 +628,7 @@ def GetHomeScreenInfo() {
 
 def SetOneTouch(String button) {
 
-    def wxURI2 = "https://iaqualink-api.realtime.io/v1/mobile/session.json?actionID=command&command=set_onetouch_${button}&serial=${serial_number}&sessionID=${session_id}"
+    def wxURI2 = "${api_url}?actionID=command&command=set_onetouch_${button}&serial=${serial_number}&sessionID=${session_id}"
     if (logEnable) log.info wxURI2
     def requestParams2 =
 	[
@@ -650,7 +654,7 @@ def SetOneTouch(String button) {
 
 def GetOneTouch() {
 
-    def wxURI2 = "https://iaqualink-api.realtime.io/v1/mobile/session.json?actionID=command&command=get_onetouch&serial=${serial_number}&sessionID=${session_id}"
+    def wxURI2 = "${api_url}?actionID=command&command=get_onetouch&serial=${serial_number}&sessionID=${session_id}"
     if (logEnable) log.info wxURI2
     def requestParams2 =
 	[
@@ -677,7 +681,7 @@ def GetOneTouch() {
 
 def GetDevices() {
     
-    def wxURI2 = "https://iaqualink-api.realtime.io/v1/mobile/session.json?actionID=command&command=get_devices&serial=${serial_number}&sessionID=${session_id}"
+    def wxURI2 = "${api_url}?actionID=command&command=get_devices&serial=${serial_number}&sessionID=${session_id}"
     if (logEnable) log.info wxURI2
     def requestParams2 =
 	[
@@ -707,7 +711,7 @@ void OperateColorLightParent(String num, String color){
     OperateColorLight(num,color)
 }
 void OperateColorLight(String num,String light_color){
-    def wxURI2 = "https://iaqualink-api.realtime.io/v1/mobile/session.json?actionID=command&aux=${num}&command=set_light&light=${light_color}&serial=${serial_number}&sessionID=${session_id}"
+    def wxURI2 = "${api_url}?actionID=command&aux=${num}&command=set_light&light=${light_color}&serial=${serial_number}&sessionID=${session_id}"
     log.info wxURI2
     def requestParams2 =
 	[
