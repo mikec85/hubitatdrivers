@@ -1,7 +1,7 @@
 {
   "packageName": "OctoPrint",
   "author": "Mike Coffey",
-  "version": "1.0",
+  "version": "1.1",
   "minimumHEVersion": "2.1.9",
   "dateReleased": "2020-04-07",
   "drivers": [
