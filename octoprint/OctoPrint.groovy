@@ -32,7 +32,8 @@ metadata {
 		attribute "tool2-offset", "number"
 		attribute "tool2-target", "number"
         
-        
+        command "Disconnect", null
+        command "Connect", null
         command "CheckPrinter", null
         command "Print", null
         command "Restart", null
@@ -371,4 +372,32 @@ def SendCommand(String payload, String path) {
     catch (Exception e) {
         log.debug "runCmd hit exception ${e} on ${hubAction}"
     }
+}
+
+def Connect(){
+    SendConnection('{"command":"connect"}')
+}
+def Disconnect(){
+    SendConnection('{"command":"disconnect"}')
+}
+
+def SendConnection(String payload) {
+    def headers = [:] 
+    headers.put("HOST", "${ip_addr}:${url_port}")
+    headers.put("Content-Type", "application/json")
+    headers.put("X-Api-Key", "${api_key}")
+    
+    try {
+        def hubAction = new hubitat.device.HubAction(
+            method: "POST",
+            path: "/api/connection",
+            body: payload,
+            headers: headers
+            )
+        //log.debug hubAction
+        return hubAction
+    }
+    catch (Exception e) {
+        log.debug "runCmd hit exception ${e} on ${hubAction}"
+    }  
 }
