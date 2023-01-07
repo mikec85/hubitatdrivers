@@ -5,7 +5,7 @@ metadata {
         //capability "Switch"
         capability "PresenceSensor"
         
-        attribute "state", "enum", ["Operational", "Printing", "Pausing", "Paused", "Cancelling", "Error", "Offline", "Disconnected"]
+        attribute "state", "enum", ["Operational", "Printing", "Pausing", "Paused", "Cancelling", "Error", "Offline", "Disconnected", "Offline after error"]
         attribute "stateMessage", "string"
         attribute "completion", "string"
         attribute "printTimeLeft", "string"
