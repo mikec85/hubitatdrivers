@@ -63,7 +63,7 @@ void parse(String description) {
 }
 
 def get_aqualink_status(){
-    //log.info device.currentValue("aqualink_status")
+    if (logEnable) log.info device.currentValue("aqualink_status")
     return device.currentValue("aqualink_status")
 }
 
@@ -99,10 +99,14 @@ void uninstalled() {
 }
 
 void initialize() {
+    if (logEnable) log.info "Initialize"
     device.updateSetting("api_url", "https://p-api.iaqualink.net/v1/mobile/session.json")
     
+    if (logEnable) log.info "LoginGetSession"
     LoginGetSession()
+    if (logEnable) log.info "CreateChildren"
     CreateChildren()
+    if (logEnable) log.info "UpdateDeviceInfo"
     updatedeviceinfo()
 
 }
@@ -168,7 +172,9 @@ void CreateChild(String Unit, String label, String devtype){
 void CreateChildren(){
    
     devices = GetDevices()
-    CreateChild("1", devices.devices_screen[3].aux_1[1].label, devices.devices_screen[3].aux_1[3].type )
+    if (logEnable) log.info devices
+	
+    try { CreateChild("1", devices.devices_screen[3].aux_1[1].label, devices.devices_screen[3].aux_1[3].type ) } catch (Exception e) { if (logEnable) log.warn "CreateChild 1 failed: ${e.message}" }
     try { CreateChild("2", devices.devices_screen[4].aux_2[1].label, devices.devices_screen[4].aux_2[3].type ) } catch (Exception e) { if (logEnable) log.warn "CreateChild 2 failed: ${e.message}" }
     try { CreateChild("3", devices.devices_screen[5].aux_3[1].label, devices.devices_screen[5].aux_3[3].type ) } catch (Exception e) { if (logEnable) log.warn "CreateChild 3 failed: ${e.message}" }
     try { CreateChild("4", devices.devices_screen[6].aux_4[1].label, devices.devices_screen[6].aux_4[3].type ) } catch (Exception e) { if (logEnable) log.warn "CreateChild 4 failed: ${e.message}" }
