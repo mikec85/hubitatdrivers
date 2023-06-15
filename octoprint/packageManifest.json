@@ -1,9 +1,10 @@
 {
   "packageName": "OctoPrint",
   "author": "Mike Coffey",
-  "version": "1.2",
+  "version": "1.3",
   "minimumHEVersion": "2.1.9",
-  "dateReleased": "2020-04-07",
+  "releaseNotes": "Show error now when printer is not connected to Octoprint",
+  "dateReleased": "2023-06-15",
   "drivers": [
     {
       "id": "f3183e3a-57b0-4d7e-8daf-a7ca33a46585",
