@@ -299,8 +299,18 @@ def GetPrinterTemp(){
 }
 
 def GetPrinterTempReturn(response, data) {
+	
 	if (logEnable) log.debug "GetPrinterTempReturn"
-	//log.debug response.getJson().temperature
+    	if (logEnable) log.debug response.status
+    
+    	if (response.status == 409) {
+            sendEvent(name: "state", value: "Printer Offline or not Connected" )
+            return
+    	}
+    
+	if (logEnable) log.debug response.getJson().temperature
+	
+	
 	def R = response.getJson()
 	def value = ""
 	def event
