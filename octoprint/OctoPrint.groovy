@@ -1,8 +1,7 @@
 metadata {
     definition (name: "OctoPrint", namespace: "OctoPrint", author: "MC", importUrl: "https://raw.githubusercontent.com/mikec85/hubitatdrivers/master/octoprint/OctoPrint.groovy") {
         capability "Actuator"
-		capability "Initialize"
-        //capability "Switch"
+	capability "Initialize"
         capability "PresenceSensor"
         
         attribute "state", "enum", ["Operational", "Printing", "Pausing", "Paused", "Cancelling", "Error", "Offline", "Disconnected", "Offline after error"]
@@ -13,24 +12,24 @@ metadata {
         attribute "estimatedPrintTime", "string"
         attribute "name", "string"
         attribute "user", "string"
-		attribute "lastPrinterCheck", "String"
+	attribute "lastPrinterCheck", "String"
         
 		
-		// attributes for temperature
-		attribute "bed-actual", "number"
-		attribute "bed-offset", "number"
-		attribute "bed-target", "number"
-		// primary extruder
-		attribute "tool0-actual", "number"
-		attribute "tool0-offset", "number"
-		attribute "tool0-target", "number"
-		// additional extruders (if available on printer)
-		attribute "tool1-actual", "number"
-		attribute "tool1-offset", "number"
-		attribute "tool1-target", "number"
-		attribute "tool2-actual", "number"
-		attribute "tool2-offset", "number"
-		attribute "tool2-target", "number"
+	// attributes for temperature
+	attribute "bed-actual", "number"
+	attribute "bed-offset", "number"
+	attribute "bed-target", "number"
+	// primary extruder
+	attribute "tool0-actual", "number"
+	attribute "tool0-offset", "number"
+	attribute "tool0-target", "number"
+	// additional extruders (if available on printer)
+	attribute "tool1-actual", "number"
+	attribute "tool1-offset", "number"
+	attribute "tool1-target", "number"
+	attribute "tool2-actual", "number"
+	attribute "tool2-offset", "number"
+	attribute "tool2-target", "number"
         
         command "Disconnect", null
         command "Connect", null
@@ -318,17 +317,17 @@ def GetPrinterTempReturn(response, data) {
 	// just processing temperature values
 	if(R.temperature != null){
 		R.temperature.each{ t ->
-			//log.debug t
+			if (logEnable) log.debug t
 			if(t != null){
-				//log.debug t.getValue()
+				if (logEnable) log.debug t.getValue()
 				t.getValue().each { i ->
-					//log.debug "${t.getKey()}-${i}"
+					if (logEnable) log.debug "${t.getKey()}-${i}"
 					value = "${t.getKey()}-${i}"
 					
 					event = value.split("=")
 					
-					//log.debug event[0]
-					//log.debug event[1]
+					if (logEnable) log.debug event[0]
+					if (logEnable) log.debug event[1]
 					
 					sendEvent(name: event[0], value: event[1] )
 				}
