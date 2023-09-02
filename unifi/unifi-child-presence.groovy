@@ -58,6 +58,9 @@ void Update(){
     status2 = parent.ChildGetClientConnected(mac_addr)
     
     if(status2.equals("") || status2 == null ) {
+        if (autoUpdate) runIn(timedelayAway.toInteger(), Update)
+        return
+    } else if (status2.equals("not_present")) {
         status3 = false
     } else {
         status3 = true

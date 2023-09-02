@@ -57,6 +57,9 @@ void Update(){
     if (logEnable) log.info status2
     
     if(status2.equals("") || status2 == null) {
+        if (autoUpdate) runIn(timedelayAway.toInteger(), Update)
+        return
+    } else if (status2.equals("not_present")) {
         status3 = false
     } else {
         status3 = true

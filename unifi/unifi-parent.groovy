@@ -330,6 +330,10 @@ def GetClientConnected(String mac) {
     } catch (Exception e){
         if (logEnable) log.info e     
         if(e.toString().contains( "groovyx.net.http.HttpResponseException:") )  {
+            if (e.response.status == 400 && e.response.data && e.response.data.meta && e.response.data.meta.rc == "error" && e.response.data.meta.msg.contains("UnknownStation")) {
+                // this is a definitive response from the UniFi controller that such client is currently not connected
+                return "not_present"
+            }
             if (logEnable) log.info "check login"
             Login()
         }
