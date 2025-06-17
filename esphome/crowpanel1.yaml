@@ -1,0 +1,242 @@
+esphome:
+  name: crowpanel2
+  friendly_name: crowpanel2
+  platformio_options:
+    build_flags: "-DBOARD_HAS_PSRAM"
+    board_build.esp-idf.memory_type: qio_opi
+    board_build.flash_mode: dio
+
+esp32:
+  board: esp32s3box
+  framework:
+    type: esp-idf
+    #version: recommended
+    sdkconfig_options:
+      CONFIG_ESP32S3_DEFAULT_CPU_FREQ_240: y
+      CONFIG_ESP32S3_DATA_CACHE_64KB: y
+      CONFIG_SPIRAM_FETCH_INSTRUCTIONS: y
+      CONFIG_SPIRAM_RODATA: y
+psram:
+  mode: octal
+  speed: 80MHz
+
+#i2c:
+#  sda: GPIO19
+#  scl: GPIO20
+#  scan: true
+
+# Enable logging
+logger:
+
+# Enable Home Assistant API
+api:
+  encryption:
+    key: "61/3m2bONglcHaEqLiq6ZJmzcejZCrtKB32uzcguUVw="
+
+ota:
+  - platform: esphome
+    password: "3efe29a4a83a732f0aa0397250fa2b8d"
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  # Enable fallback hotspot (captive portal) in case wifi connection fails
+  ap:
+    ssid: "Crowpanel2 Fallback Hotspot"
+    password: "j6HHV6DbyeCF"
+
+captive_portal:
+
+#external_components:
+#  - source:
+#      type: git
+#      url: https://github.com/clydebarrow/esphome
+#      ref: fd15094c0860df23d532881df36cfd16c7da1091 #previous commit - wont be needed in the future
+#    components: [ lvgl ]
+
+# Define a PWM output on the ESP32
+output:
+  - platform: ledc
+    pin: 2
+    frequency: 1220
+    id: gpio_backlight_pwm
+
+light:
+  - platform: monochromatic # Define a monochromatic, dimmable light for the backlight
+    output: gpio_backlight_pwm
+    name: ${devicename} Display Backlight
+    id: back_light
+    restore_mode: ALWAYS_ON
+
+image:
+  - file: https://github.com/Elecrow-RD/CrowPanel-5.0-HMI-ESP32-Display-800x480/blob/master/example/Esphome/Materials/light.png?raw=true
+    id: on_light
+    resize: 50x50
+    type: RGB565
+  - file: https://github.com/Elecrow-RD/CrowPanel-5.0-HMI-ESP32-Display-800x480/blob/master/example/Esphome/Materials/small_hum.png?raw=true
+    id: small_hum
+    resize: 50x75
+    type: RGB565
+  - file: https://github.com/Elecrow-RD/CrowPanel-5.0-HMI-ESP32-Display-800x480/blob/master/example/Esphome/Materials/small_logo.png?raw=true
+    id: small_logo
+    resize: 250x52
+    type: RGB565
+  - file: https://github.com/Elecrow-RD/CrowPanel-5.0-HMI-ESP32-Display-800x480/blob/master/example/Esphome/Materials/small_off.png?raw=true
+    id: small_off
+    resize: 50x75
+    type: RGB565
+  - file: https://github.com/Elecrow-RD/CrowPanel-5.0-HMI-ESP32-Display-800x480/blob/master/example/Esphome/Materials/small_temp.png?raw=true
+    id: small_temp
+    resize: 50x75
+    type: RGB565
+  - file: https://github.com/Elecrow-RD/CrowPanel-5.0-HMI-ESP32-Display-800x480/blob/master/example/Esphome/Materials/no_light.png?raw=true
+    id: no_light
+    resize: 50x50
+    type: RGB565
+#设置i2c引脚
+i2c:
+  sda: 19
+  scl: 20
+#设置屏幕配置
+display:
+  - platform: rpi_dpi_rgb
+    id: main_display
+    color_order: RGB
+    invert_colors: True
+    update_interval: never
+    auto_clear_enabled: false # takes 2.8 seconds to clear the display
+    dimensions:
+      width: 800
+      height: 480
+    de_pin: 40
+    hsync_pin: 39
+    vsync_pin: 41
+    pclk_pin: 0
+    pclk_frequency: 12MHz
+    data_pins:
+      red:
+        - 45        #r1
+        - 48        #r2
+        - 47        #r3
+        - 21        #r4
+        - 14        #r5
+      green:
+        - 5         #g0
+        - 6         #g1
+        - 7         #g2
+        - 15        #g3
+        - 16        #g4
+        - 4         #g5
+      blue:
+        - 8         #b1
+        - 3         #b2
+        - 46        #b3
+        - 9         #b4
+        - 1         #b5
+
+
+time:
+  - platform: sntp
+    id: time_comp    
+#设置tsl2561传感器，DHT22温湿度传感器
+sensor:
+  - platform: tsl2561
+    name: "TSL2561 Ambient Light"
+    id: TSL2561
+    address: 0x29
+    update_interval: 2s
+  - platform: dht
+    pin: 38
+    temperature:
+      name: "HMI-24 Temperature"
+      id: temperature24
+    humidity:
+      id: humidity24
+      name: "HMI-24 Humidity"
+    update_interval: 5s
+    model: DHT22
+#使用LVGL显示UI画面
+lvgl:
+  log_level: INFO
+  color_depth: 16
+  bg_color: 0xFFFFFF
+  text_font: unscii_8
+  align: center
+  style_definitions:
+    - id: date_style
+      text_font: unscii_8
+      align: center
+      text_color: 0x000000
+      bg_opa: cover
+      radius: 4
+      pad_all: 2
+  widgets:
+      - image:          
+          src: small_logo
+          id: lvgl_logo
+          zoom: 2
+          x: 300
+          y: 40
+      - image:          
+          src: on_light
+          id: lvgl_light
+          zoom: 2
+          x: 150
+          y: 300
+      - image:          
+          src: small_hum
+          id: lvgl_hum
+          zoom: 2
+          x: 390
+          y: 280
+      - image:          
+          src: small_temp
+          id: lvgl_temp
+          zoom: 2
+          x: 630
+          y: 280
+      - label:
+          id : tsl
+          text_font: montserrat_24
+          text:
+             format: "%.0f"
+             args: ['id(TSL2561).state']
+          x: 160
+          y: 400
+      - label:
+          id : hum
+          text_font: montserrat_24
+          text:
+             format: "%.0f"
+             args: ['id(humidity24).state']
+          x: 400
+          y: 400
+      - label:
+          id : tem
+          text_font: montserrat_24
+          text:
+             format: "%.0f"
+             args: ['id(temperature24).state']
+          x: 640
+          y: 400
+#设置一个定时器定时更新UI数据
+interval:
+  - interval: 1s
+    then: 
+      - lvgl.label.update:
+          id: tsl
+          text:
+             format: "%.1f"
+             args: ['id(TSL2561).state']
+      - lvgl.label.update:
+          id: hum
+          text:
+             format: "%.1f"
+             args: ['id(humidity24).state']
+      - lvgl.label.update:
+          id: tem
+          text:
+             format: "%.1f"
+             args: ['id(temperature24).state']
+
